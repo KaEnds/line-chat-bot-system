@@ -1,14 +1,24 @@
+# Use the official Python slim base image
 FROM python:3.11-slim
 
+# Set the working directory in the container
 WORKDIR /app
 
-COPY . /app
-
+# Upgrade pip
 RUN pip install --upgrade pip
 
+# Copy *only* the requirements file first
+COPY requirements.txt .
+
+# Install Python dependencies
+# This layer is cached as long as requirements.txt doesn't change
 RUN pip install -r requirements.txt
 
+# Now copy the rest of your application code
+COPY . .
+
+# Expose the port the app runs on
 EXPOSE 8000
 
-CMD uvicorn main:app --host 0.0.0.0 --port 8000
-
+# The command to run your application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

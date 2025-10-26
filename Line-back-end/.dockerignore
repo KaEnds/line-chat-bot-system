@@ -1,0 +1,13 @@
+venv/
+.venv/
+
+# Ignore Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore IDE/editor-specific files
+.vscode/
+.idea/
+*.swp

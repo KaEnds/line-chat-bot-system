@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  # ---------- Backend (FastAPI / Python) ----------
+  backend:
+    build:
+      context: ./line-back-end      # path ไปยัง folder backend
+      dockerfile: Dockerfile        # ใช้ Dockerfile นี้
+    container_name: line_backend
+    ports:
+      - "8000:8000"                 # forward port 8000
+    environment:
+      - PYTHONUNBUFFERED=1          # ป้องกัน buffer log
+    volumes:
+      - ./line-back-end:/app        # สำหรับ hot-reload ใน dev (optional)
+    restart: unless-stopped
+
+  # ---------- Frontend (Next.js / Node.js) ----------
+  frontend:
+    build:
+      context: ./line-front-end
+      dockerfile: Dockerfile
+    container_name: line_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_TELEMETRY_DISABLED=1
+    depends_on:
+      - backend
+
+  # ---------- Cloudflare Tunnel ----------
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflare-tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+
+# You can re-enable networks if you need them
+# networks:
+#   default:

@@ -1,6 +1,10 @@
 # Virtual environments (global and inside subfolders)
 line-back-end/venv/
 line-back-end/.env
+.env
 
 # Node modules (frontend)
 line-front-end/node_modules/
+
+# Ignore all __pycache__ folders in Line-back-end
+Line-back-end/**/__pycache__/
