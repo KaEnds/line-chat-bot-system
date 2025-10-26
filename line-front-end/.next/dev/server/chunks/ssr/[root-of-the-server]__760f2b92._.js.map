@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 22, "column": 0}, "map": {"version":3,"sources":["file:///E:/Senior%20Project/Line-chat-bot-system/line-front-end/app/test/%5Bslug%5D/page.tsx"],"sourcesContent":["export default async function TestPage({params}: {params: {slug: string}}) {\r\n  const slug = await params.slug;\r\n  return <div> slug: { slug }</div>;\r\n}"],"names":[],"mappings":";;;;;;AAAe,eAAe,SAAS,EAAC,MAAM,EAA2B;IACvE,MAAM,OAAO,MAAM,OAAO,IAAI;IAC9B,qBAAO,8OAAC;;YAAI;YAAS;;;;;;;AACvB","debugId":null}}]
+}

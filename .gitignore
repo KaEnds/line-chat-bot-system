@@ -1,0 +1,6 @@
+# Virtual environments (global and inside subfolders)
+line-back-end/venv/
+line-back-end/.env
+
+# Node modules (frontend)
+line-front-end/node_modules/

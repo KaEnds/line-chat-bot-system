@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///E:/Senior%20Project/Line-chat-bot-system/line-front-end/app/test/layout.tsx"],"sourcesContent":["export default function Testlayout({\r\n  children,\r\n}: {\r\n  children: React.ReactNode\r\n}) {\r\n  return (\r\n    <html lang=\"en\">\r\n      <body>\r\n        {/* Layout UI */}\r\n        {/* Place children where you want to render a page or nested layout */}\r\n        <main>\r\n            <div>sub header</div>\r\n            {children}\r\n        </main>\r\n      </body>\r\n    </html>\r\n  )\r\n}"],"names":[],"mappings":";;;;;;AAAe,SAAS,WAAW,EACjC,QAAQ,EAGT;IACC,qBACE,8OAAC;QAAK,MAAK;kBACT,cAAA,8OAAC;sBAGC,cAAA,8OAAC;;kCACG,8OAAC;kCAAI;;;;;;oBACJ;;;;;;;;;;;;;;;;;AAKb","debugId":null}}]
+}

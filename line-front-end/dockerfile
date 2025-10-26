@@ -1,0 +1,38 @@
+# ---------- Stage 1: Build ----------
+FROM node:20-alpine AS builder
+
+# ตั้ง working directory
+WORKDIR /app
+
+# คัดลอก package.json และ lock file
+COPY package*.json ./
+
+# ติดตั้ง dependencies
+RUN npm ci
+
+# คัดลอก source code ทั้งหมด
+COPY . .
+
+# Build โปรเจกต์ Next.js
+RUN npm run build
+
+# ---------- Stage 2: Run ----------
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+# ปิด telemetry ของ Next.js
+ENV NEXT_TELEMETRY_DISABLED 1
+
+# คัดลอกไฟล์จำเป็นจาก builder stage
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/package*.json ./
+
+# ติดตั้งเฉพาะ production dependencies
+RUN npm ci --omit=dev
+
+# เปิด port ที่ Next.js ใช้
+EXPOSE 3000
+
+# สั่งรันแอป
+CMD ["npm", "run", "start"]

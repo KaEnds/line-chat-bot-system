@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 22, "column": 0}, "map": {"version":3,"sources":["file:///E:/Senior%20Project/Line-chat-bot-system/line-front-end/app/test/page.tsx"],"sourcesContent":["export default function TestPage({params}: {params: {id: string}}) {\r\n  return <div> slug:</div>;\r\n}"],"names":[],"mappings":";;;;;;AAAe,SAAS,SAAS,EAAC,MAAM,EAAyB;IAC/D,qBAAO,8OAAC;kBAAI;;;;;;AACd","debugId":null}}]
+}
