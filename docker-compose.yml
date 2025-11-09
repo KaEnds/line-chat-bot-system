@@ -20,6 +20,9 @@ services:
     build:
       context: ./line-front-end
       dockerfile: Dockerfile
+      # [เพิ่ม] 1. บอกให้ Docker ใช้ stage "builder" จาก Dockerfile ของคุณ
+      # (เพราะ stage นี้มี dev dependencies ที่จำเป็นสำหรับ npm run dev)
+      target: builder
     container_name: line_frontend
     ports:
       - "3000:3000"
@@ -27,13 +30,26 @@ services:
       - NEXT_TELEMETRY_DISABLED=1
     depends_on:
       - backend
+    
+    # [เพิ่ม] 2. ซิงค์ไฟล์โค้ดของคุณเข้าไปใน Container
+    volumes:
+      # ซิงค์โฟลเดอร์โค้ดของคุณ (./line-front-end) ไปที่ /app ใน Docker
+      - ./line-front-end:/app
+      # "อย่า" ซิงค์ node_modules จากเครื่องคุณเข้าไป ให้ใช้ของที่อยู่ใน Docker
+      - /app/node_modules
+      # "อย่า" ซิงค์ .next จากเครื่องคุณ ให้ Docker สร้างเองข้างใน
+      - /app/.next
+
+    # [เพิ่ม] 3. บังคับให้รัน dev server (แทน npm run start)
+    command: npm run dev
+
 
   # ---------- Cloudflare Tunnel ----------
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: cloudflare-tunnel
     restart: unless-stopped
-    command: tunnel --no-autoupdate run
+    command: tunnel --no-autoupdate run 
     environment:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
 

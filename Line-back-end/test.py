@@ -6,9 +6,7 @@ from langchain.agents import create_agent
 from langchain.agents.middleware import wrap_tool_call, dynamic_prompt, ModelRequest
 from langchain_core.messages import ToolMessage
 import json
-
-from linebot.v3.messaging import MessagingApi, ApiClient, TextMessage, ReplyMessageRequest
-from linebot.models import ReplyMessageRequest
+import requests
 
 USER_DATABASE = {
     "user123": {
@@ -29,24 +27,6 @@ USER_DATABASE = {
 class Line_Context:
     reply_token: str
 
-def reply_line_message(reply_token: str, text: str) -> str:
-    """
-    ส่งข้อความตอบกลับผู้ใช้บน LINE
-    Args:
-        reply_token: reply_token จาก Event
-        text: ข้อความที่จะส่ง
-    Returns:
-        ผลลัพธ์การส่งข้อความ
-    """
-    with ApiClient(configuration) as api_client:
-        line_bot_api = MessagingApi(api_client)
-        line_bot_api.reply_message_with_http_info(
-            ReplyMessageRequest(
-                reply_token=reply_token,
-                messages=[TextMessage(text=text)]
-            )
-        )
-    return f"Message sent: {text}"
 
 @tool
 def get_account_info(user_id: str) -> str:
@@ -75,6 +55,24 @@ def get_weather(location: str) -> str:
     """Get weather information for a location."""
     return f"Weather in {location}: Sunny, 72°F"
 
+@tool
+def search_google_books(query: str) -> str:
+    """Search for books using Google Books API and return titles and authors."""
+    url = f"https://www.googleapis.com/books/v1/volumes?q={query}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        books = data.get("items", [])[:5] # เอาแค่ 5 เล่มแรก
+        results = []
+        for book in books:
+            info = book.get("volumeInfo", {})
+            title = info.get("title", "Unknown Title")
+            authors = ", ".join(info.get("authors", ["Unknown Author"]))
+            results.append(f"- {title} by {authors}")
+        return "\n".join(results) if results else "No books found."
+    else:
+        return f"Error searching books: {response.status_code}"
+
 @dynamic_prompt
 def user_role_prompt(request: ModelRequest) -> str:
     """Generate system prompt based on user role."""
@@ -88,7 +86,7 @@ def user_role_prompt(request: ModelRequest) -> str:
 
     return base_prompt
 
-agent = create_agent(Chat, tools=[search, get_weather, add, get_account_info, reply_line_message], system_prompt="You are a helpful assistant. Be concise and accurate.")
+agent = create_agent(Chat, tools=[search, get_weather, add, get_account_info, search_google_books], system_prompt="You are a helpful assistant. Be concise and accurate.")
 
 # result = agent.invoke(
 #     {"messages": [{"role": "user", "content": "Can you help me add 15 and 27?"}]}
@@ -109,7 +107,7 @@ agent = create_agent(Chat, tools=[search, get_weather, add, get_account_info, re
 # # ใช้งาน
 # pretty_print_result(result)
 for chunk in agent.stream({
-    "messages": [{"role": "user", "content": "get information of user user123"}], 
+    "messages": [{"role": "user", "content": "ค้นหาหนังสือเกี่ยวกับปัญญาประดิษฐ์ใน Google Books"}], 
 }, stream_mode="values"):
     # Each chunk contains the full state at that point
     latest_message = chunk["messages"][-1]
