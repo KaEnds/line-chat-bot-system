@@ -22,12 +22,21 @@ async def callback(request: Request):
 
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_message(event):
-
-    reply_msg = chatbot_agent(event.message.text)
-    
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
-        line_bot_api.reply_message_with_http_info(
+
+        user_id = event.source.user_id
+        display_name = "คุณลูกค้า" # ค่าเริ่มต้นกรณีดึงไม่ได้
+        try:
+            profile = line_bot_api.get_profile(user_id)
+            display_name = profile.display_name
+            print(f"User ID: {profile.user_id}, Name: {display_name}")
+        except Exception as e:
+            print(f"Error getting profile: {e}")
+
+        reply_msg = chatbot_agent(event.message.text)
+        
+        line_bot_api.reply_message(
             ReplyMessageRequest(
                 reply_token=event.reply_token,
                 messages=[TextMessage(text=reply_msg)]

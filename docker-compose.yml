@@ -43,6 +43,21 @@ services:
     # [เพิ่ม] 3. บังคับให้รัน dev server (แทน npm run start)
     command: npm run dev
 
+  # postgres-vector:
+  #     # 1. นี่คือ Image ที่มี pgvector ติดตั้งมาให้แล้ว
+  #     image: pgvector/pgvector:pg16 
+  #     container_name: local_pgvector
+  #     environment:
+  #       # 2. ตั้งค่า User/Pass/DB ให้ตรงกับที่คุณใช้
+  #       POSTGRES_DB: librairy
+  #       POSTGRES_USER: admin
+  #       POSTGRES_PASSWORD: adminpass
+  #     ports:
+  #       # 3. เชื่อมต่อ Port 5433 (ที่คุณใช้) เข้ากับ Port 5432 ของ Docker
+  #       - "5433:5432" 
+  #     volumes:
+  #       - pgvector_data:/var/lib/postgresql/data
+  #     restart: unless-stopped
 
   # ---------- Cloudflare Tunnel ----------
   cloudflared:

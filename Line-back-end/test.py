@@ -2,11 +2,12 @@ from Config.chatbot_agent_config import LLM as Chat
 from Config.line_token_config import handler, configuration
 from dataclasses import dataclass
 from langchain.tools import tool, ToolRuntime
-from langchain.agents import create_agent
+from langchain.agents import create_agent, AgentExecutor
 from langchain.agents.middleware import wrap_tool_call, dynamic_prompt, ModelRequest
 from langchain_core.messages import ToolMessage
 import json
 import requests
+
 
 USER_DATABASE = {
     "user123": {
@@ -88,26 +89,8 @@ def user_role_prompt(request: ModelRequest) -> str:
 
 agent = create_agent(Chat, tools=[search, get_weather, add, get_account_info, search_google_books], system_prompt="You are a helpful assistant. Be concise and accurate.")
 
-# result = agent.invoke(
-#     {"messages": [{"role": "user", "content": "Can you help me add 15 and 27?"}]}
-# )
-
-
-# def pretty_print_result(result):
-#     def default_serializer(obj):
-#         """แปลง object ที่ serialize ไม่ได้ให้เป็น string"""
-#         try:
-#             return obj.__dict__
-#         except:
-#             return str(obj)
-
-#     formatted = json.dumps(result, indent=4, ensure_ascii=False, default=default_serializer)
-#     print(formatted)
-
-# # ใช้งาน
-# pretty_print_result(result)
 for chunk in agent.stream({
-    "messages": [{"role": "user", "content": "ค้นหาหนังสือเกี่ยวกับปัญญาประดิษฐ์ใน Google Books"}], 
+    "messages": [{"role": "user", "content": "ค้นหา user123 และบอกข้อมูลบัญชีของเขา"}], 
 }, stream_mode="values"):
     # Each chunk contains the full state at that point
     latest_message = chunk["messages"][-1]
