@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from Routes.webhook_route import router as webhook_router
 from Routes.Auth import router as auth_router
+from Routes.API import router as API_router
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from Config.database_config import Base, engine, SessionLocal
@@ -16,12 +17,16 @@ origins = [
 ]
 
 app.add_middleware(
-    SessionMiddleware, 
-    secret_key=os.urandom(32) # หรือตั้งค่าเป็นสตริงลับใน .env
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(webhook_router)
 app.include_router(auth_router, prefix="/auth")
+app.include_router(API_router, prefix="/API")
 
 def get_db():
     db = SessionLocal()

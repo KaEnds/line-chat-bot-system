@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, Column, BigInteger, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-postgresql_url = "postgresql+psycopg2://admin:adminpass@localhost:5433/librairy"
+postgresql_url = "postgresql+psycopg2://admin:adminpass@127.0.0.1:5432/librairy"
 
 engine = create_engine(postgresql_url)
 
