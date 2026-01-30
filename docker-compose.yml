@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  frontend:
+    build:
+      context: ./line-front-end
+      dockerfile: Dockerfile
+      target: builder
+    container_name: line_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_TELEMETRY_DISABLED=1
+    # depends_on:
+    #   - backend
+    
+    volumes:
+      - ./line-front-end:/app
+      - /app/node_modules
+      - /app/.next
+
+    command: npm run dev
+
+  # ---------- Cloudflare Tunnel ----------
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflare-tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run 
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+
+# You can re-enable networks if you need them
+volumes:
+  line-chat-bot-system_pgvector_data:

@@ -1,0 +1,157 @@
+import { Pool, QueryResult } from 'pg';
+
+// ตั้งค่า Connection Pool ตามข้อมูลใน pgAdmin
+const pool = new Pool({
+  host: 'host.docker.internal',
+  port: 5434,
+  database: 'librairy', 
+  user: 'admin',
+  password: 'adminpass'
+});
+
+// ตรวจสอบ Error ขณะ Idle
+pool.on('error', (err) => {
+  console.error('Unexpected error on idle client', err);
+  process.exit(-1);
+});
+
+// ฟังก์ชันสำหรับ Execute Query
+export const query = async (text: string, params?: any[]): Promise<QueryResult> => {
+  const start = Date.now();
+  try {
+    const result = await pool.query(text, params);
+    const duration = Date.now() - start;
+    console.log('Executed query', { text, duration, rows: result.rowCount });
+    return result;
+  } catch (error) {
+    console.error('Database query error:', error);
+    throw error;
+  }
+};
+
+// ฟังก์ชันสำหรับ Get Client (กรณีใช้ Transaction)
+export const getClient = async () => {
+  return pool.connect();
+};
+
+// ฟังก์ชันทดสอบการเชื่อมต่อ
+export const testConnection = async (): Promise<boolean> => {
+  try {
+    const client = await pool.connect();
+    const result = await client.query('SELECT NOW()');
+    console.log('✅ Database connection successful!');
+    console.log('Current database time:', result.rows[0].now);
+    client.release();
+    return true;
+  } catch (error: any) {
+    console.error('❌ Database connection failed:', error.message);
+    return false;
+  }
+};
+
+export const getTestBib = async (limit: number = 100) => {
+  const queryText = 'SELECT * FROM librairy.test_bib LIMIT $1';
+  try {
+    const res = await pool.query(queryText, [limit]);
+    return res.rows;
+  } catch (err) {
+    console.error('Error executing query on test_bib:', err);
+    throw err;
+  }
+};
+
+// ฟังก์ชันสำหรับ Insert ข้อมูลลงตาราง book_requests
+export const insertBookRequest = async (data: any) => {
+  const queryText = `
+    INSERT INTO librairy.book_requests (
+      title, authors, isbn_issn, publication_year, 
+      branch, requester_name, requester_role, 
+      faculty_id, department_id, request_reason_category, 
+      specify_reason, status, requested_at
+    )
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())
+    RETURNING *;
+  `;
+
+  const values = [
+    data.title,
+    data.authors,
+    data.isbn_issn,
+    data.publication_year,
+    data.branch,
+    data.requester_name,
+    data.requester_role,
+    data.faculty_id,
+    data.department_id,
+    data.request_reason_category,
+    data.specify_reason,
+    data.status || 'pending' // ถ้าไม่ส่งมาให้เป็น pending
+  ];
+
+  try {
+    const res = await pool.query(queryText, values);
+    return res.rows[0];
+  } catch (err) {
+    console.error('❌ Database Insert Error:', err);
+    throw err;
+  }
+};
+
+// ฟังก์ชันสำหรับ Insert ข้อมูลผู้ใช้ใหม่
+// ฟังก์ชันสำหรับ Insert ข้อมูลลงตาราง web_user
+export const insertWebUser = async (userData: any) => {
+  const queryText = `
+    INSERT INTO librairy.web_user (
+      username, password, user_role, account_status, name, surname
+    )
+    VALUES ($1, $2, $3, $4, $5, $6)
+    RETURNING *;
+  `;
+
+  const values = [
+    userData.username,
+    userData.password, // ในระบบจริงควรมีการ hash รหัสผ่านก่อน
+    userData.user_role,
+    userData.account_status,
+    userData.name,
+    userData.surname
+  ];
+
+  try {
+    const res = await pool.query(queryText, values);
+    return res.rows[0];
+  } catch (err) {
+    console.error('❌ Insert User Error:', err);
+    throw err;
+  }
+};
+
+export const submitRequestForm = async (formData: any) => {
+  console.log('Form Data Received:', formData);
+};
+
+export const getMyRequests = async (requesterID: string) => {
+  const query = 'SELECT * FROM librairy.book_requests WHERE requester_id = $1'
+
+  const values = [requesterID];
+
+  try {
+    const res = await pool.query(query, values);
+    return res.rows;
+  } catch (err) {
+    console.error('Database Query Error:', err);
+  }
+};
+
+export const getOthersRequests = async () => {
+  const query = 'SELECT * FROM librairy.book_requests'
+  
+  try {
+    const res = await pool.query(query);
+    return res.rows;
+  } catch (err) {
+    console.error('Database Query Error:', err);
+  }
+}
+
+export default pool;
