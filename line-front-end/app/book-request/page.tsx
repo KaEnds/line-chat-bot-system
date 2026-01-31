@@ -13,7 +13,9 @@ import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -25,7 +27,7 @@ interface FormData {
   studentId: string;
   academicYear: string;
   department: string;
-  major: string;
+  faculty: string;
   email: string;
   title: string;
   author: string;
@@ -50,7 +52,7 @@ function BookRequestContent() {
     studentId: "",
     academicYear: "",
     department: "",
-    major: "",
+    faculty: "",
     email: "",
     title: "",
     author: "",
@@ -62,7 +64,7 @@ function BookRequestContent() {
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
-
+  const [FactAndDept, setFactAndDept] = useState<any[]>([]);
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -79,6 +81,15 @@ function BookRequestContent() {
       return;
     }
 
+    fetch('/api/get-faculties-and-departments', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    }).then(response => response.json())
+    .then(data => { 
+      setFactAndDept(data.requests);
+    })
+    console.log('Faculties and Departments Data:', FactAndDept);
+
     // 1. Autofill จาก Session (Azure AD) (ทำเหมือนเดิม)
     let sessionData = {};
     if (status === "authenticated" && session?.user) {
@@ -93,7 +104,7 @@ function BookRequestContent() {
         email: user.email || "",
         studentId: user.studentId || "",
         department: user.department || "",
-        // major: user.major || "",
+        // faculty: user.faculty || "",
       };
     }
 
@@ -128,7 +139,15 @@ function BookRequestContent() {
   };
 
   const handleSelectChange = (name: string) => (value: string) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => {
+    const newData = { ...prev, [name]: value };
+
+    if (name === 'faculty') {
+      newData.department = '';
+    }
+
+    return newData;
+    });
   };
 
   const handleSubmit = (e: FormEvent) => {
@@ -142,8 +161,8 @@ function BookRequestContent() {
     if (!formData.department.trim()) {
       newErrors.department = "Please enter department";
     }
-    if (!formData.major.trim()) {
-      newErrors.major = "Please enter major";
+    if (!formData.faculty.trim()) {
+      newErrors.faculty = "Please enter faculty";
     }
     if (!formData.title.trim()) {
       newErrors.title = "Please enter book title";
@@ -299,28 +318,44 @@ function BookRequestContent() {
               {errors.academicYear && <p className="text-red-500 text-sm">{errors.academicYear}</p>}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="department">ภาควิชา</Label>
-              <Input
-                id="department"
-                name="department"
-                value={formData.department}
-                placeholder="Auto fill"
-                onChange={handleChange}
-                className={errors.department ? "border-red-500" : ""}
-              />
-              {errors.department && <p className="text-red-500 text-sm">{errors.department}</p>}
+              <Label htmlFor="faculty">คณะ</Label>
+              <Select onValueChange={handleSelectChange("faculty")} value={formData.faculty}>
+                <SelectTrigger id="faculty" className={errors.faculty ? "border-red-500 w-full" : "w-full"}>
+                  <SelectValue placeholder="เลือกคณะ" />
+                </SelectTrigger>
+                <SelectContent>
+                  {FactAndDept
+                    .filter((item, index, self) => 
+                      index === self.findIndex((t) => t.faculty_id === item.faculty_id)
+                    )
+                    .map((item) => (
+                      <SelectItem key={item.faculty_id} value={item.faculty_id.toString()}>
+                        {item.faculty_name_th}
+                      </SelectItem>
+                    ))
+                  }
+                </SelectContent>
+              </Select>
+              {errors.faculty && <p className="text-red-500 text-sm">{errors.faculty}</p>}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="major">สาขาวิชา</Label>
-              <Input
-                id="major"
-                name="major"
-                value={formData.major}
-                placeholder="Auto fill"
-                onChange={handleChange}
-                className={errors.major ? "border-red-500" : ""}
-              />
-              {errors.major && <p className="text-red-500 text-sm">{errors.major}</p>}
+              <Label htmlFor="department">ภาควิชา</Label>
+              <Select onValueChange={handleSelectChange("department")} value={formData.department}>
+                <SelectTrigger id="department" className={errors.department ? "border-red-500 w-full" : "w-full"}>
+                  <SelectValue placeholder="เลือกภาควิชา" />
+                </SelectTrigger>
+                <SelectContent>
+                  {FactAndDept
+                    .filter((item) => item.faculty_id === parseInt(formData.faculty))
+                    .map((item) => (
+                      <SelectItem key={item.department_id} value={item.department_id.toString()}>
+                        {item.department_name_th}
+                      </SelectItem>
+                    ))
+                  }
+                </SelectContent>
+              </Select>
+              {errors.department && <p className="text-red-500 text-sm">{errors.department}</p>}
             </div>
             <div className="space-y-2 md:col-span-2">
               <Label htmlFor="email">Email</Label>
@@ -348,7 +383,7 @@ function BookRequestContent() {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                placeholder="เช่น The Silent Patient (กรอกเองได้)"
+                placeholder=""
                 className={errors.title ? "border-red-500" : ""}
               />
               {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
@@ -361,21 +396,21 @@ function BookRequestContent() {
                 name="author"
                 value={formData.author}
                 onChange={handleChange}
-                placeholder="เช่น Alex Michaelides (กรอกเองได้)"
+                placeholder=""
                 className={errors.author ? "border-red-500" : ""}
               />
               {errors.author && <p className="text-red-500 text-sm">{errors.author}</p>}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="isbn">ISBN/ISSN</Label>
+                <Label htmlFor="isbn">ISBN/ISSN ( ถ้าไม่มีให้ใส่ - )</Label>
                 {/* [อัปเกรด] ช่องนี้จะ Autofill จาก URL */}
                 <Input
                   id="isbn"
                   name="isbn"
                   value={formData.isbn}
                   onChange={handleChange}
-                  placeholder="เช่น 978-1-250-30169-7 (กรอกเองได้)"
+                  placeholder="ตัวอย่าง 978-1-250-30169-7"
                   className={errors.isbn ? "border-red-500" : ""}
                 />
                 {errors.isbn && <p className="text-red-500 text-sm">{errors.isbn}</p>}

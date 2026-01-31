@@ -154,4 +154,28 @@ export const getOthersRequests = async () => {
   }
 }
 
+export const getFacultiesAndDepartment = async () => {
+
+  const query = `
+    SELECT 
+      f.faculty_id, 
+      f.faculty_name_en, 
+      f.faculty_name_th, 
+      d.department_id, 
+      d.department_name_en, 
+      d.department_name_th
+    FROM librairy.faculties f
+    JOIN librairy.departments d ON f.faculty_id = d.faculty_id
+    ORDER BY f.faculty_id, d.department_id
+  `;
+
+  try {
+    const res = await pool.query(query);
+    return res.rows;
+  } catch (err) {
+    console.error('Database Query Error:', err);
+  }
+}
+
+
 export default pool;

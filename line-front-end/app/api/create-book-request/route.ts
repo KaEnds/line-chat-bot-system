@@ -6,7 +6,7 @@ const FormDataSchema = z.object({
     studentId: z.string().max(225),
     academicYear: z.string(),
     department: z.string(),
-    major: z.string(),
+    faculty: z.string(),
     email: z.string(),
     title: z.string(),
     author: z.string(),
