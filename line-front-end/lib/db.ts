@@ -64,35 +64,37 @@ export const getTestBib = async (limit: number = 100) => {
 export const insertBookRequest = async (data: any) => {
   const queryText = `
     INSERT INTO librairy.book_requests (
-      title, authors, isbn_issn, publication_year, 
-      branch, requester_name, requester_role, 
+      title, authors, isbn_issn, publication_year, publisher,
+      branch, requester_name, requester_id, requester_role, 
       faculty_id, department_id, request_reason_category, 
       specify_reason, status, requested_at
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW())
     RETURNING *;
   `;
 
   const values = [
     data.title,
-    data.authors,
-    data.isbn_issn,
-    data.publication_year,
+    data.authors || null,
+    data.isbn_issn || null,
+    data.publication_year || null,
+    data.publisher || null,
     data.branch,
     data.requester_name,
+    data.requester_id,
     data.requester_role,
     data.faculty_id,
     data.department_id,
     data.request_reason_category,
     data.specify_reason,
-    data.status || 'pending' // ถ้าไม่ส่งมาให้เป็น pending
+    data.status || 'PENDING'
   ];
 
   try {
     const res = await pool.query(queryText, values);
     return res.rows[0];
   } catch (err) {
-    console.error('❌ Database Insert Error:', err);
+    console.error('Database Insert Error:', err);
     throw err;
   }
 };
@@ -121,7 +123,7 @@ export const insertWebUser = async (userData: any) => {
     const res = await pool.query(queryText, values);
     return res.rows[0];
   } catch (err) {
-    console.error('❌ Insert User Error:', err);
+    console.error('Insert User Error:', err);
     throw err;
   }
 };

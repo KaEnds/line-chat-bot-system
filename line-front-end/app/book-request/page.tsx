@@ -36,6 +36,7 @@ interface FormData {
   publisher: string;
   reason: string;
   reasonDescription: string;
+  branch: string;
 }
 
 // Interface สำหรับ Validation Errors
@@ -61,6 +62,7 @@ function BookRequestContent() {
     publisher: "",
     reason: "",
     reasonDescription: "",
+    branch: ""
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -167,23 +169,14 @@ function BookRequestContent() {
     if (!formData.title.trim()) {
       newErrors.title = "Please enter book title";
     }
-    if (!formData.author.trim()) {
-      newErrors.author = "Please enter author name";
-    }
-    if (!formData.isbn.trim()) {
-      newErrors.isbn = "Please enter ISBN/ISSN";
-    }
-    if (!formData.publishYear.trim()) {
-      newErrors.publishYear = "Please enter year of publication";
-    }
-    if (!formData.publisher.trim()) {
-      newErrors.publisher = "Please enter publisher";
-    }
     if (!formData.reason.trim()) {
       newErrors.reason = "Please select request reason";
     }
     if (!formData.reasonDescription.trim()) {
       newErrors.reasonDescription = "Please enter reason description";
+    }
+    if (!formData.branch.trim()) {
+      newErrors.branch = "Please enter branch";
     }
     
     if (Object.keys(newErrors).length > 0) {
@@ -264,7 +257,7 @@ function BookRequestContent() {
         {/* Error message alert */}
         {Object.keys(errors).length > 0 && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-700 font-semibold">กรุณากรอกข้อมูลให้ครบทุกช่อง:</p>
+            <p className="text-red-700 font-semibold">กรุณากรอกข้อมูลที่จะเป็นให้ครบทุกช่อง:</p>
           </div>
         )}
 
@@ -410,7 +403,7 @@ function BookRequestContent() {
                   name="isbn"
                   value={formData.isbn}
                   onChange={handleChange}
-                  placeholder="ตัวอย่าง 978-1-250-30169-7"
+                  placeholder=""
                   className={errors.isbn ? "border-red-500" : ""}
                 />
                 {errors.isbn && <p className="text-red-500 text-sm">{errors.isbn}</p>}
@@ -438,6 +431,20 @@ function BookRequestContent() {
                 className={errors.publisher ? "border-red-500" : ""}
               />
               {errors.publisher && <p className="text-red-500 text-sm">{errors.publisher}</p>}
+            </div>
+            <div className='space-y-2'>
+              <Label htmlFor="branch">สาขาห้องสมุดที่ต้องการให้จัดซื้อ</Label>
+              <Select onValueChange={handleSelectChange("branch")} value={formData.branch}>
+                <SelectTrigger id="branch" className={errors.branch ? "border-red-500" : ""}>
+                  <SelectValue placeholder="เลือกสาขาห้องสมุด" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="mai">KMUTT Library</SelectItem>
+                  <SelectItem value="bkt">KMUTT Bangkhuntian Library</SelectItem>
+                  <SelectItem value="rat">KMUTT Ratchaburi Library</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.branch && <p className="text-red-500 text-sm">{errors.branch}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="reason">Request reason (เหตุผลที่ขอ)</Label>
