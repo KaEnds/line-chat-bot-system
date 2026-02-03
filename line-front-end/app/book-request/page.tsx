@@ -71,7 +71,7 @@ function BookRequestContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const callbackUrl = `/book-request/?title=${searchParams.get('title')}&author=${searchParams.get('author')}&isbn=${searchParams.get('isbn')}}`
+  const callbackUrl = `/book-request/?title=${searchParams.get('title')}&author=${searchParams.get('author')}&isbn=${searchParams.get('isbn')}`;
 
   // [อัปเกรด] useEffect นี้จะทำงาน 2 อย่าง:
   // 1. ดึงข้อมูลจาก Session (Azure AD)
@@ -81,7 +81,7 @@ function BookRequestContent() {
       return;
     }
     if (status === "unauthenticated") {
-      router.push(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+      router.push(`/login?callbackUrl=${searchParams.get('title') ? encodeURIComponent(callbackUrl) : '/book-request'}`);
       return;
     }
 
