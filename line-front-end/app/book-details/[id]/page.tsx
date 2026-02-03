@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter, useParams, useSearchParams, notFound } from "next/navigation";
+import { usePathname, useRouter, useParams, useSearchParams, notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -20,24 +20,26 @@ interface BookData {
 
 export default function BookDetailsPage() {
   const router = useRouter();
-  const params = useParams(); // Hook สำหรับดึง [id] จาก URL
-  const searchParams = useSearchParams(); // Hook สำหรับดึง Query Parameters จาก URL
-  const { status } = useSession(); // ตรวจสอบสิทธิ์
-
+  const params = useParams();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { status } = useSession();
+  
   const [book, setBook] = useState<BookData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const bookId = Array.isArray(params.id) ? params.id[0] : params.id;
+  const callbackUrl = `/book-details/${bookId}?title=${searchParams.get('title')}&author=${searchParams.get('author')}&isbn=${searchParams.get('isbn')}&coverImage=${searchParams.get('coverImage')}&description=${searchParams.get('description')}`
 
   useEffect(() => {
-    // 1. ตรวจสอบสิทธิ์ (เหมือนเดิม)
-    if (status === "loading") return; // รอก่อน
+    if (status === "loading") {
+      return;
+    }
     if (status === "unauthenticated") {
-      router.push("/login"); // ยังไม่ Login เด้งไปหน้า Login
+      router.push(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
       return;
     }
 
-    // 2. ถ้า Login แล้ว ให้ดึงข้อมูลหนังสือ
     if (status === "authenticated") {
       // ตรวจสอบว่าได้รับข้อมูลจาก URL หรือไม่
       const titleFromUrl = searchParams.get('title');

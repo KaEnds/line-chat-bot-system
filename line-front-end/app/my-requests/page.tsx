@@ -16,7 +16,7 @@ function MyRequestContent() {
       return;
     }
     if (status === "unauthenticated") {
-      router.push("/login");
+      router.push("/login?callbackUrl=/my-requests");
       return;
     }
 

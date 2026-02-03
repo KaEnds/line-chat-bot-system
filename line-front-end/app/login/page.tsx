@@ -2,6 +2,7 @@
 
 // เราต้อง import 2 อย่างนี้เพื่อจัดการการ Login
 import { signIn, useSession } from "next-auth/react";
+import { useSearchParams } from 'next/navigation';
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -10,15 +11,19 @@ import { useEffect } from "react";
 export default function LoginPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/book-request';
+
+  console.log(callbackUrl)
 
   // 1. ตรวจสอบว่า Login หรือยัง?
   useEffect(() => {
     // ถ้า Login สำเร็จ (authenticated)
     if (status === "authenticated") {
       // ให้เด้งไปหน้าฟอร์ม (หรือหน้าหลัก)
-      router.push("/book-request"); 
+      router.push(callbackUrl); 
     }
-  }, [status, router]);
+  }, [status, router, callbackUrl]);
 
   // ถ้ากำลังโหลด หรือ Login แล้ว ให้โชว์หน้าขาวๆ ไปก่อน
   if (status === "loading" || status === "authenticated") {

@@ -13,7 +13,7 @@ function OthersRequestContent() {
         return;
       }
         if (status === "unauthenticated") { 
-        router.push("/login");
+        router.push("/login?callbackUrl=/other-requests");
         return;
       }
 
