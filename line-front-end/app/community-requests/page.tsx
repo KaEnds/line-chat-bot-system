@@ -51,17 +51,6 @@ export default function CommunityRequestsPage() {
 
   return (
     <div className="min-h-screen bg-[#FFB133]">
-      {/* Navigation Bar สีดำตามธีม */}
-      <header className="bg-black sticky top-0 z-10 px-4 py-4 flex items-center shadow-lg">
-        <button 
-          onClick={() => router.back()} 
-          className="p-1 hover:bg-white/10 rounded-full transition-colors"
-        >
-          <ChevronLeft size={28} color="white" />
-        </button>
-        <h1 className="ml-2 text-xl font-bold text-white">Community Requests</h1>
-      </header>
-
       <main className="p-4 max-w-2xl mx-auto">
         <p className="text-black font-medium mb-6 text-center bg-white/20 py-2 rounded-lg">
           ค้นหาหนังสือที่เพื่อนๆ สนใจ แล้วกดขอร่วมได้เลย!

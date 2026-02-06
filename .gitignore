@@ -2,6 +2,7 @@
 line-back-end/venv/
 line-back-end/.env
 .env
+.env.local
 
 # Node modules (frontend)
 line-front-end/node_modules/

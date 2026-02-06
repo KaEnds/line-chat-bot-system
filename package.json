@@ -1,5 +1,14 @@
 {
+  "scripts": {
+    "dev": "cd line-front-end && npm run dev",
+    "build": "cd line-front-end && npm run build",
+    "start": "cd line-front-end && npm start"
+  },
   "dependencies": {
-    "@line/liff": "^2.27.2"
+    "@line/liff": "^2.27.2",
+    "@prisma/client": "^7.3.0"
+  },
+  "devDependencies": {
+    "prisma": "^7.3.0"
   }
 }

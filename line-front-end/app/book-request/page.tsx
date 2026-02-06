@@ -166,7 +166,7 @@ function BookRequestContent() {
             <Link href="/community-requests">
               <Button variant="outline" size="sm" className="flex gap-2 items-center border-black font-semibold hover:bg-gray-50 text-blue-600 border-blue-600 transition-all">
                 <Users size={16} />
-                คำขอเพื่อนๆ
+                คำขอผู้อื่น
               </Button>
             </Link>
           </div>
@@ -200,19 +200,19 @@ function BookRequestContent() {
           {/* ข้อมูลผู้ใช้งาน */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700">ชื่อ</Label>
+              <Label className="font-bold text-gray-700 text-xs">ชื่อ</Label>
               <Input value={formData.firstName} readOnly className="bg-gray-50 border-gray-200" />
             </div>
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700">สกุล</Label>
+              <Label className="font-bold text-gray-700 text-xs">สกุล</Label>
               <Input value={formData.lastName} readOnly className="bg-gray-50 border-gray-200" />
             </div>
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700">รหัสนักศึกษา</Label>
+              <Label className="font-bold text-gray-700 text-xs">รหัสนักศึกษา</Label>
               <Input value={formData.studentId} readOnly className="bg-gray-50 border-gray-200" />
             </div>
             <div className="space-y-2">
-              <Label className="font-bold">ชั้นปี</Label>
+              <Label className="font-bold text-gray-700 text-xs">ชั้นปี</Label>
               <Select onValueChange={handleSelectChange("academicYear")} value={formData.academicYear}>
                 <SelectTrigger className={errors.academicYear ? "border-red-500 shadow-sm" : "shadow-sm"}>
                   <SelectValue placeholder="เลือกชั้นปี" />
@@ -229,9 +229,9 @@ function BookRequestContent() {
             
             {/* Faculty & Department Selectors */}
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700">คณะ</Label>
+              <Label className="font-bold text-gray-700 text-xs">คณะ</Label>
               <Select onValueChange={handleSelectChange("faculty")} value={formData.faculty}>
-                <SelectTrigger className={errors.faculty ? "border-red-500" : ""}>
+                <SelectTrigger className={errors.faculty ? "border-red-500 w-full" : "w-full"}>
                   <SelectValue placeholder="เลือกคณะ" />
                 </SelectTrigger>
                 <SelectContent>
@@ -248,9 +248,9 @@ function BookRequestContent() {
             </div>
             
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700">ภาควิชา</Label>
+              <Label className="font-bold text-gray-700  text-xs">ภาควิชา</Label>
               <Select onValueChange={handleSelectChange("department")} value={formData.department} disabled={!formData.faculty}>
-                <SelectTrigger className={errors.department ? "border-red-500" : ""}>
+                <SelectTrigger className={errors.department ? "border-red-500 w-full" : "w-full"}>
                   <SelectValue placeholder="เลือกภาควิชา" />
                 </SelectTrigger>
                 <SelectContent>
@@ -272,34 +272,39 @@ function BookRequestContent() {
           {/* ข้อมูลหนังสือ */}
           <div className="space-y-5">
             <div className="space-y-2">
-              <Label className="font-bold">ชื่อหนังสือ (Title)</Label>
+              <Label className="font-bold text-gray-700  text-xs">ชื่อหนังสือ (Title)</Label>
               <Input name="title" value={formData.title} onChange={handleChange} className={errors.title ? "border-red-500 shadow-sm" : "shadow-sm"} />
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="font-bold">ผู้แต่ง (Author)</Label>
+                <Label className="font-bold text-gray-700  text-xs">ผู้แต่ง (Author)</Label>
                 <Input name="author" value={formData.author} onChange={handleChange} className="shadow-sm" />
-              </div>
-              <div className="space-y-2">
-                <Label className="font-bold text-xs">ISBN (ถ้าไม่มีให้ใส่ - )</Label>
-                <Input name="isbn" value={formData.isbn} onChange={handleChange} className="shadow-sm" />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="font-bold text-gray-700 text-xs">Year (ปีที่พิมพ์)</Label>
-                <Input name="publishYear" type="number" value={formData.publishYear} onChange={handleChange} className="shadow-sm" />
+                <Label className='font-bold text-gray-700  text-xs' htmlFor="isbn">ISBN/ISSN ( ถ้าไม่มีไม่ต้องใส่ )</Label>
+                {/* [อัปเกรด] ช่องนี้จะ Autofill จาก URL */}
+                <Input
+                  id="isbn"
+                  name="isbn"
+                  value={formData.isbn}
+                  onChange={handleChange}
+                  placeholder=""
+                  className={errors.isbn ? "border-red-500" : ""}
+                />
+                {errors.isbn && <p className="text-red-500 text-sm">{errors.isbn}</p>}
               </div>
               <div className="space-y-2">
-                <Label className="font-bold text-gray-700 text-xs">Publisher (สำนักพิมพ์)</Label>
+                <Label className="font-bold text-gray-700  text-xs">Publisher (สำนักพิมพ์)</Label>
                 <Input name="publisher" value={formData.publisher} onChange={handleChange} className="shadow-sm" />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700 text-xs">สาขาห้องสมุดที่ต้องการ</Label>
+              <Label className="font-bold text-gray-700  text-xs">สาขาห้องสมุดที่ต้องการ</Label>
               <Select onValueChange={handleSelectChange("branch")} value={formData.branch}>
                 <SelectTrigger className={errors.branch ? "border-red-500" : ""}>
                   <SelectValue placeholder="เลือกสาขาห้องสมุด" />
@@ -313,7 +318,7 @@ function BookRequestContent() {
             </div>
 
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700 text-xs">เหตุผลที่ขอ (Reason)</Label>
+              <Label className="font-bold text-gray-700  text-xs">เหตุผลที่ขอ (Reason)</Label>
               <Select onValueChange={handleSelectChange("reason")} value={formData.reason}>
                 <SelectTrigger className={errors.reason ? "border-red-500" : ""}>
                   <SelectValue placeholder="เลือกเหตุผล" />
@@ -337,7 +342,7 @@ function BookRequestContent() {
                 className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-black outline-none resize-none shadow-sm text-sm ${
                   errors.reasonDescription ? "border-red-500" : "border-gray-200"
                 }`}
-                placeholder="ระบุเหตุผลอย่างละเอียด..."
+                placeholder="กรุณาบรรยายเหตุผลหรือข้อมูลเพิ่มเติมที่เกี่ยวข้องอย่างละเอียด (มีผลนำไปประกอบการตัดสินใจจัดซื้อหนังสือ) เช่น ต้องการหนังสือ python programming เพื่อใช้ทำโปรเจคเกี่ยวกับ data analysis เป็นต้น"
               />
             </div>
           </div>
