@@ -45,6 +45,7 @@ export async function POST(request: Request) {
         }
 
         const requestDB = await insertBookRequest(formatedformData);
+        // เพิ่ม insert ใน table สำหรับเช็คการกดปุ่ม request
 
         if (!requestDB) {
             throw new Error('Failed to insert book request');

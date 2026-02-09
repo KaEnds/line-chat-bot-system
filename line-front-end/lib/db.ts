@@ -145,11 +145,13 @@ export const getMyRequests = async (requesterID: string) => {
   }
 };
 
-export const getOthersRequests = async () => {
-  const query = 'SELECT * FROM librairy.book_requests'
+export const getOthersRequests = async (requesterID: string) => {
+  const query = 'SELECT * FROM librairy.book_requests WHERE requester_id != $1'
+
+  const values = [requesterID];
   
   try {
-    const res = await pool.query(query);
+    const res = await pool.query(query, values);
     return res.rows;
   } catch (err) {
     console.error('Database Query Error:', err);
@@ -178,6 +180,34 @@ export const getFacultiesAndDepartment = async () => {
     console.error('Database Query Error:', err);
   }
 }
+
+export const getSupporterRequest = async () => {
+  const query = 'SELECT * FROM librairy.request_supporters'
+  
+  try {
+    const res = await pool.query(query);
+    return res.rows;
+  } catch (err) {
+    console.error('Database Query Error:', err);
+  }
+}
+
+export const insertSupporterRequest = async (request_id: string, requester_id: string) => {
+  try {
+    const query = `
+      INSERT INTO librairy.request_supporters (request_id, requester_id, supported_at)
+      VALUES ($1, $2, NOW())
+      RETURNING *;
+    `;
+    
+    const values = [Number(request_id), requester_id];
+    
+    const res = await pool.query(query, values);
+    return res.rows;
+  } catch (err) {
+    console.error("Error inserting supporter:", err);
+  }
+};
 
 
 export default pool;

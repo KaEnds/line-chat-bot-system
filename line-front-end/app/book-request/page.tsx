@@ -33,6 +33,7 @@ interface FormData {
   reason: string;
   reasonDescription: string;
   branch: string;
+  remark: string;
 }
 
 interface FormErrors {
@@ -57,7 +58,8 @@ function BookRequestContent() {
     publisher: "",
     reason: "",
     reasonDescription: "",
-    branch: ""
+    branch: "",
+    remark: ""
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -163,7 +165,7 @@ function BookRequestContent() {
                 คำขอของฉัน
               </Button>
             </Link>
-            <Link href="/community-requests">
+            <Link href="/other-requests">
               <Button variant="outline" size="sm" className="flex gap-2 items-center border-black font-semibold hover:bg-gray-50 text-blue-600 border-blue-600 transition-all">
                 <Users size={16} />
                 คำขอผู้อื่น
@@ -267,6 +269,11 @@ function BookRequestContent() {
             </div>
           </div>
 
+          <div className='space-y-2'>
+            <Label className="font-bold text-gray-700 text-xs w-full">หมายเหตุ (remark)</Label>
+            <Input name='remark' value={formData.remark} onChange={handleChange} className="bg-gray-50 border-gray-200" />
+          </div>
+
           <hr className="border-gray-100" />
 
           {/* ข้อมูลหนังสือ */}
@@ -324,9 +331,9 @@ function BookRequestContent() {
                   <SelectValue placeholder="เลือกเหตุผล" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="course">ใช้ประกอบการเรียน</SelectItem>
-                  <SelectItem value="research">ใช้ทำวิจัย</SelectItem>
-                  <SelectItem value="personal">อ่านส่วนตัว</SelectItem>
+                  <SelectItem value="course">Personal interest</SelectItem>
+                  <SelectItem value="research">in class usage</SelectItem>
+                  <SelectItem value="personal">insufficient existing resource</SelectItem>
                   <SelectItem value="other">อื่นๆ</SelectItem>
                 </SelectContent>
               </Select>
