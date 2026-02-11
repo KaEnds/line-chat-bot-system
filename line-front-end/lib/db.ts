@@ -60,17 +60,36 @@ export const getTestBib = async (limit: number = 100) => {
   }
 };
 
-// ฟังก์ชันสำหรับ Insert ข้อมูลลงตาราง book_requests
 export const insertBookRequest = async (data: any) => {
   const queryText = `
-    INSERT INTO librairy.book_requests (
-      title, authors, isbn_issn, publication_year, publisher,
-      branch, requester_name, requester_id, requester_role, 
-      faculty_id, department_id, request_reason_category, 
-      specify_reason, status, requested_at
+    WITH inserted_request AS (
+        INSERT INTO librairy.book_requests (
+            title, authors, isbn_issn, publication_year, publisher,
+            branch, requester_name, requester_id, requester_role, 
+            faculty_id, department_id, request_reason_category, 
+            specify_reason, status, requested_at
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW() AT TIME ZONE 'UTC')
+        RETURNING request_id
+    ),
+    insert_supporters AS (
+        INSERT INTO librairy.request_supporters (request_id, requester_id, supported_at)
+        SELECT request_id, $8, NOW() AT TIME ZONE 'UTC' FROM inserted_request
+        RETURNING request_id
+    ),
+    active_batch AS (
+        SELECT batch_id FROM librairy.batches 
+        WHERE (NOW() AT TIME ZONE 'UTC') BETWEEN batch_start_date AND batch_end_date
+          AND status = 'PROCESSING'
+        LIMIT 1
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW())
-    RETURNING *;
+    INSERT INTO librairy.batch_requests (batch_id, request_id)
+    SELECT 
+        ab.batch_id, 
+        ir.request_id
+    FROM inserted_request ir
+    CROSS JOIN active_batch ab
+    RETURNING (SELECT request_id FROM inserted_request) AS new_id;
   `;
 
   const values = [
@@ -99,8 +118,6 @@ export const insertBookRequest = async (data: any) => {
   }
 };
 
-// ฟังก์ชันสำหรับ Insert ข้อมูลผู้ใช้ใหม่
-// ฟังก์ชันสำหรับ Insert ข้อมูลลงตาราง web_user
 export const insertWebUser = async (userData: any) => {
   const queryText = `
     INSERT INTO librairy.web_user (
