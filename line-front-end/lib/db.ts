@@ -184,7 +184,8 @@ export const getFacultiesAndDepartment = async () => {
       f.faculty_name_th, 
       d.department_id, 
       d.department_name_en, 
-      d.department_name_th
+      d.department_name_th,
+      d.degree
     FROM librairy.faculties f
     JOIN librairy.departments d ON f.faculty_id = d.faculty_id
     ORDER BY f.faculty_id, d.department_id

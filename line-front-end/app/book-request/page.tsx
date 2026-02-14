@@ -225,6 +225,7 @@ function BookRequestContent() {
                   <SelectItem value="3">ปี 3</SelectItem>
                   <SelectItem value="4">ปี 4</SelectItem>
                   <SelectItem value="5">สูงกว่าปริญญาตรี</SelectItem>
+                  <SelectItem value="6">เจ้าหน้าที่</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -239,6 +240,7 @@ function BookRequestContent() {
                 <SelectContent>
                   {FactAndDept
                     .filter((item, idx, self) => idx === self.findIndex((t) => t.faculty_id === item.faculty_id))
+                    .filter((item) => formData.academicYear === '6' ? item.faculty_name_th === 'อื่น ๆ' : true)
                     .map((item) => (
                       <SelectItem key={item.faculty_id} value={item.faculty_id.toString()}>
                         {item.faculty_name_th}
@@ -258,6 +260,15 @@ function BookRequestContent() {
                 <SelectContent>
                   {FactAndDept
                     .filter((item) => item.faculty_id === parseInt(formData.faculty))
+                    .filter((item) => {
+                      if (formData.academicYear === '6') {
+                        return item.department_name_th === 'อื่น ๆ';
+                      } else if (formData.academicYear === '5') {
+                        return item.degree && item.degree.toLowerCase().includes('master');
+                      } else {
+                        return item.degree && item.degree.toLowerCase().includes('bachelor');
+                      }
+                    })
                     .map((item) => (
                       <SelectItem key={item.department_id} value={item.department_id.toString()}>
                         {item.department_name_th}
