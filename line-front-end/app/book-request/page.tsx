@@ -331,9 +331,9 @@ function BookRequestContent() {
                   <SelectValue placeholder="เลือกเหตุผล" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="course">Personal interest</SelectItem>
-                  <SelectItem value="research">in class usage</SelectItem>
-                  <SelectItem value="personal">insufficient existing resource</SelectItem>
+                  <SelectItem value="Personal interest">Personal interest</SelectItem>
+                  <SelectItem value="in class usage">in class usage</SelectItem>
+                  <SelectItem value="insufficient existing resource">insufficient existing resource</SelectItem>
                   <SelectItem value="other">อื่นๆ</SelectItem>
                 </SelectContent>
               </Select>
