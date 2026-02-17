@@ -173,7 +173,7 @@ export const getOthersRequests = async (requesterID: string) => {
   } catch (err) {
     console.error('Database Query Error:', err);
   }
-}
+};
 
 export const getFacultiesAndDepartment = async () => {
 
@@ -227,5 +227,32 @@ export const insertSupporterRequest = async (request_id: string, requester_id: s
   }
 };
 
+export const getBookDetailsByTitleInLibrary = async (title: string) => {
+  try {
+    const query = `
+      SELECT * FROM librairy.test_bib3
+      WHERE title ILIKE $1
+    `;
+    const values = [`%${title}%`];
+    const res = await pool.query(query, values);
+    return res.rows;
+  } catch (err) {
+    console.error("Error fetching book details:", err);
+  }
+}
+
+export const getBookDetailsByTitleOutLibrary = async (title: string) => {
+  try {
+    const query = `
+      SELECT * FROM librairy.book_api_cache
+      WHERE title ILIKE $1
+    `;
+    const values = [`%${title}%`];
+    const res = await pool.query(query, values);
+    return res.rows;
+  } catch (err) {
+    console.error("Error fetching book details:", err);
+  }
+}
 
 export default pool;

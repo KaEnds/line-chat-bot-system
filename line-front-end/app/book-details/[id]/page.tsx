@@ -29,7 +29,9 @@ export default function BookDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const bookId = Array.isArray(params.id) ? params.id[0] : params.id;
-  const callbackUrl = `/book-details/${bookId}?title=${searchParams.get('title')}&author=${searchParams.get('author')}&isbn=${searchParams.get('isbn')}&coverImage=${searchParams.get('coverImage')}&description=${searchParams.get('description')}`
+  const callbackUrl = `/book-details/isInLibrary=${searchParams.get('isInLibrary')}?title=${searchParams.get('title')}&author=${searchParams.get('author')}&isbn=${searchParams.get('isbn')}&coverImage=${searchParams.get('coverImage')}&description=${searchParams.get('description')}`
+
+  console.log('isInLibrary:', searchParams.get('isInLibrary'));
 
   useEffect(() => {
     if (status === "loading") {
@@ -41,12 +43,22 @@ export default function BookDetailsPage() {
     }
 
     if (status === "authenticated") {
-      // ตรวจสอบว่าได้รับข้อมูลจาก URL หรือไม่
+      const isInLibrary = searchParams.get('isInLibrary');
       const titleFromUrl = searchParams.get('title');
       const authorFromUrl = searchParams.get('author');
       const isbnFromUrl = searchParams.get('isbn');
       const coverImageFromUrl = searchParams.get('coverImage');
       const descriptionFromUrl = searchParams.get('description');
+
+      fetch('/api/get-book-details', {
+        method: 'POST',
+        headers: {  'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: titleFromUrl, isInLibrary })
+      }).then(res => res.json())
+        .then(data => {
+          console.log('Book details from API:', data);
+        })
+        .catch(err => console.error('Error fetching book details:', err));
 
       if (titleFromUrl) {
         // ถ้าได้รับข้อมูลจาก URL ให้ใช้ข้อมูลนั้น

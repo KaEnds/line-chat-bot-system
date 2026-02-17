@@ -22,9 +22,9 @@ services:
     command: npm run dev
 
   # ---------- Cloudflare Tunnel ----------
-  cloudflared:
+  cloudflared: 
     image: cloudflare/cloudflared:latest
-    container_name: cloudflare-tunnel
+    container_name: cloudflare-tunnel-line-chat-bot
     restart: unless-stopped
     command: tunnel --no-autoupdate run 
     environment:
