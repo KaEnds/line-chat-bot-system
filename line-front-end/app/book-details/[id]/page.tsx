@@ -11,11 +11,11 @@ import { Input } from "@/components/ui/input";
 // Interface สำหรับข้อมูลหนังสือ (จำลอง)
 interface BookData {
   id: string;
-  title: string;
-  author: string;
-  isbn: string;
-  coverImage: string;
-  description: string;
+  title: string | null;
+  author: string | null;
+  isbn: string | null;
+  coverImage: string | null;
+  description: string | null;
 }
 
 export default function BookDetailsPage() {
@@ -50,28 +50,43 @@ export default function BookDetailsPage() {
       const coverImageFromUrl = searchParams.get('coverImage');
       const descriptionFromUrl = searchParams.get('description');
 
-      fetch('/api/get-book-details', {
-        method: 'POST',
-        headers: {  'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: titleFromUrl, isInLibrary })
-      }).then(res => res.json())
-        .then(data => {
-          console.log('Book details from API:', data);
-        })
-        .catch(err => console.error('Error fetching book details:', err));
+      const fetchBookDetails = async () => {
+        try {
+          const response = await fetch('/api/get-book-details', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: titleFromUrl, isInLibrary })
+          });
+          const data = await response.json();
+          const bookFromApi = data?.bookDetails?.[0];
+
+          const mappedBook: BookData = {
+            id: bookId || "url-book",
+            title: bookFromApi?.title ?? titleFromUrl ?? null,
+            author: bookFromApi?.authors ?? authorFromUrl ?? null,
+            isbn: bookFromApi?.isbn_issn ?? isbnFromUrl ?? null,
+            coverImage: coverImageFromUrl || "https://placehold.co/400x600/gray/white?text=No+Cover",
+            description: bookFromApi?.description ?? descriptionFromUrl ?? null,
+          };
+
+          setBook(mappedBook);
+        } catch (err) {
+          console.error('Error fetching book details:', err);
+          setBook({
+            id: bookId || "url-book",
+            title: titleFromUrl ?? null,
+            author: authorFromUrl ?? null,
+            isbn: isbnFromUrl ?? null,
+            coverImage: coverImageFromUrl || "https://placehold.co/400x600/gray/white?text=No+Cover",
+            description: descriptionFromUrl ?? null,
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
       if (titleFromUrl) {
-        // ถ้าได้รับข้อมูลจาก URL ให้ใช้ข้อมูลนั้น
-        const urlData: BookData = {
-          id: bookId || "url-book",
-          title: titleFromUrl,
-          author: authorFromUrl || "",
-          isbn: isbnFromUrl || "",
-          coverImage: coverImageFromUrl || "https://placehold.co/400x600/gray/white?text=No+Cover",
-          description: descriptionFromUrl || "No description available",
-        };
-        setBook(urlData);
-        setIsLoading(false);
+        fetchBookDetails();
       } else {
         notFound();
       }
@@ -86,9 +101,9 @@ export default function BookDetailsPage() {
 
     // เราจะสร้าง URL Query String เพื่อ "ส่ง" ข้อมูลไป Autofill
     const queryParams = new URLSearchParams({
-      title: book.title,
-      author: book.author,
-      isbn: book.isbn
+      title: book.title ?? "",
+      author: book.author ?? "",
+      isbn: book.isbn ?? ""
     });
 
     // ส่งผู้ใช้ไปหน้าฟอร์ม พร้อมข้อมูล
@@ -121,8 +136,8 @@ export default function BookDetailsPage() {
           {/* 1. รูปปก (จำลอง) */}
           <div className="md:col-span-1">
             <img
-              src={book.coverImage}
-              alt={book.title}
+              src={book.coverImage ?? "https://placehold.co/400x600/gray/white?text=No+Cover"}
+              alt={book.title ?? "Book cover"}
               className="w-full h-auto rounded-lg shadow-md aspect-[2/3]"
               onError={(e) => (e.currentTarget.src = "https://placehold.co/400x600/gray/white?text=Error")}
             />
@@ -130,18 +145,18 @@ export default function BookDetailsPage() {
 
           {/* 2. รายละเอียด */}
           <div className="md:col-span-2 space-y-4">
-            <h1 className="text-3xl font-bold text-gray-900">{book.title}</h1>
-            <p className="text-xl text-gray-700">by {book.author}</p>
+            <h1 className="text-3xl font-bold text-gray-900">{book.title ?? null}</h1>
+            <p className="text-xl text-gray-700">by {book.author ?? null}</p>
 
             <div className="space-y-2">
               <Label htmlFor="isbn">ISBN/ISSN</Label>
-              <Input id="isbn" value={book.isbn} readOnly className="bg-gray-100" />
+              <Input id="isbn" value={book.isbn ?? ""} readOnly className="bg-gray-100" />
             </div>
 
             <div className="space-y-2">
               <Label>Description</Label>
               <p className="text-gray-600 bg-gray-50 p-3 rounded-md border">
-                {book.description}
+                {book.description ?? null}
               </p>
             </div>
 
