@@ -1,4 +1,6 @@
-version: "3.9"
+networks:
+  librairy-net:
+    external: true
 
 services:
   frontend:
@@ -7,6 +9,8 @@ services:
       dockerfile: Dockerfile
       target: builder
     container_name: line_frontend
+    networks:
+      - librairy-net
     ports:
       - "3000:3000"
     environment:
@@ -22,13 +26,15 @@ services:
     command: npm run dev
 
   # ---------- Cloudflare Tunnel ----------
-  cloudflared: 
-    image: cloudflare/cloudflared:latest
-    container_name: cloudflare-tunnel-line-chat-bot
-    restart: unless-stopped
-    command: tunnel --no-autoupdate run 
-    environment:
-      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+  # cloudflared: 
+  # image: cloudflare/cloudflared:latest
+  # container_name: cloudflare-tunnel-line-chat-bot
+  # restart: unless-stopped
+  # networks:
+  #   - librairy-net
+  # command: tunnel --no-autoupdate run 
+  # environment:
+  #   - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
 
 # You can re-enable networks if you need them
 volumes:
