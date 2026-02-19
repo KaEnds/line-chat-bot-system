@@ -202,19 +202,19 @@ function BookRequestContent() {
           {/* ข้อมูลผู้ใช้งาน */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700 text-xs">ชื่อ</Label>
+              <Label className="font-bold text-gray-700 text-xs">ชื่อ ( first name )</Label>
               <Input value={formData.firstName} readOnly className="bg-gray-50 border-gray-200" />
             </div>
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700 text-xs">สกุล</Label>
+              <Label className="font-bold text-gray-700 text-xs">สกุล ( last name )</Label>
               <Input value={formData.lastName} readOnly className="bg-gray-50 border-gray-200" />
             </div>
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700 text-xs">รหัสนักศึกษา</Label>
+              <Label className="font-bold text-gray-700 text-xs">รหัสนักศึกษา ( student ID )</Label>
               <Input value={formData.studentId} readOnly className="bg-gray-50 border-gray-200" />
             </div>
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700 text-xs">ชั้นปี</Label>
+              <Label className="font-bold text-gray-700 text-xs">ชั้นปี ( academic year )</Label>
               <Select onValueChange={handleSelectChange("academicYear")} value={formData.academicYear}>
                 <SelectTrigger className={errors.academicYear ? "border-red-500 shadow-sm" : "shadow-sm"}>
                   <SelectValue placeholder="เลือกชั้นปี" />
@@ -281,7 +281,7 @@ function BookRequestContent() {
           </div>
 
           <div className='space-y-2'>
-            <Label className="font-bold text-gray-700 text-xs w-full">หมายเหตุ (remark)</Label>
+            <Label className="font-bold text-gray-700 text-xs w-full">หมายเหตุ ( remark )</Label>
             <Input name='remark' value={formData.remark} onChange={handleChange} className="bg-gray-50 border-gray-200" />
           </div>
 
@@ -296,7 +296,7 @@ function BookRequestContent() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="font-bold text-gray-700  text-xs">ผู้แต่ง (Author)</Label>
+                <Label className="font-bold text-gray-700  text-xs">ผู้แต่ง ( Author )</Label>
                 <Input name="author" value={formData.author} onChange={handleChange} className="shadow-sm" />
               </div>
             </div>
@@ -316,13 +316,13 @@ function BookRequestContent() {
                 {errors.isbn && <p className="text-red-500 text-sm">{errors.isbn}</p>}
               </div>
               <div className="space-y-2">
-                <Label className="font-bold text-gray-700  text-xs">Publisher ( สำนักพิมพ์ )</Label>
+                <Label className="font-bold text-gray-700  text-xs">สำนักพิมพ์ ( Publisher )</Label>
                 <Input name="publisher" value={formData.publisher} onChange={handleChange} className="shadow-sm" />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700  text-xs">สาขาห้องสมุดที่ต้องการ</Label>
+              <Label className="font-bold text-gray-700  text-xs">สาขาห้องสมุดที่ต้องการ ( Library Branch )</Label>
               <Select onValueChange={handleSelectChange("branch")} value={formData.branch}>
                 <SelectTrigger className={errors.branch ? "border-red-500" : ""}>
                   <SelectValue placeholder="เลือกสาขาห้องสมุด" />
@@ -351,7 +351,7 @@ function BookRequestContent() {
             </div>
 
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700 text-xs">คำอธิบายเพิ่มเติม</Label>
+              <Label className="font-bold text-gray-700 text-xs">คำอธิบายเพิ่มเติม ( Additional Description )</Label>
               <textarea
                 name="reasonDescription"
                 value={formData.reasonDescription}
