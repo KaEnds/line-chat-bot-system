@@ -227,31 +227,51 @@ export const insertSupporterRequest = async (request_id: string, requester_id: s
   }
 };
 
-export const getBookDetailsByTitleInLibrary = async (title: string) => {
+export const getBookDetailsByBibId = async (bookId: string | number) => {
   try {
     const query = `
       SELECT * FROM librairy.test_bib3
-      WHERE title ILIKE $1
+      WHERE bibid = $1
     `;
-    const values = [`%${title}%`];
+    
+    const idValue = parseInt(bookId.toString(), 10);
+
+    if (isNaN(idValue)) {
+      throw new Error("Invalid bibid: must be a number");
+    }
+
+    const values = [idValue];
     const res = await pool.query(query, values);
-    return res.rows;
+    
+    return res.rows.length > 0 ? res.rows[0] : null;
+
   } catch (err) {
-    console.error("Error fetching book details:", err);
+    console.error("Error fetching book details by bibid:", err);
+    throw err;
   }
 }
 
-export const getBookDetailsByTitleOutLibrary = async (title: string) => {
+export const getBookDetailsByCacheId = async (bookId: string | number) => {
   try {
     const query = `
       SELECT * FROM librairy.book_api_cache
-      WHERE title ILIKE $1
+      WHERE cache_id = $1
     `;
-    const values = [`%${title}%`];
+    
+    const idValue = parseInt(bookId.toString(), 10);
+
+    if (isNaN(idValue)) {
+      throw new Error("Invalid cache_id: ต้องระบุเป็นตัวเลขเท่านั้น");
+    }
+
+    const values = [idValue];
     const res = await pool.query(query, values);
-    return res.rows;
+    
+    return res.rows.length > 0 ? res.rows[0] : null;
+
   } catch (err) {
-    console.error("Error fetching book details:", err);
+    console.error("Error fetching book details by cache_id:", err);
+    throw err; 
   }
 }
 

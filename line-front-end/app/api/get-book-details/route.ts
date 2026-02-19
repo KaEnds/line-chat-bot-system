@@ -1,4 +1,4 @@
-import { getBookDetailsByTitleInLibrary } from "@/lib/db";
+import { getBookDetailsByBibId, getBookDetailsByCacheId } from "@/lib/db";
 import { get } from "http";
 
 export async function POST(request: Request) {
@@ -8,10 +8,10 @@ export async function POST(request: Request) {
         
         if(data) {
             if (data.isInLibrary === "true") {
-                const bookDetails = await getBookDetailsByTitleInLibrary(data.title);
+                const bookDetails = await getBookDetailsByBibId(data.bookId);
                 return new Response(JSON.stringify({ message: "Success", bookDetails }), { status: 200 });
             }else {
-                const bookDetails = await getBookDetailsByTitleInLibrary(data.title);
+                const bookDetails = await getBookDetailsByCacheId(data.bookId);
                 return new Response(JSON.stringify({ message: "Success", bookDetails }), { status: 200 });  
             }
         }

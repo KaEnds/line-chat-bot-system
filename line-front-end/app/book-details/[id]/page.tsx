@@ -14,6 +14,8 @@ interface BookData {
   title: string | null;
   author: string | null;
   isbn: string | null;
+  yearOfPublication: string | null;
+  subject: string | null;
   coverImage: string | null;
   description: string | null;
 }
@@ -29,9 +31,10 @@ export default function BookDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const bookId = Array.isArray(params.id) ? params.id[0] : params.id;
-  const callbackUrl = `/book-details/isInLibrary=${searchParams.get('isInLibrary')}?title=${searchParams.get('title')}&author=${searchParams.get('author')}&isbn=${searchParams.get('isbn')}&coverImage=${searchParams.get('coverImage')}&description=${searchParams.get('description')}`
+  const callbackUrl = `/book-details/${bookId}?isInLibrary=${searchParams.get('isInLibrary')}&title=${searchParams.get('title')}&author=${searchParams.get('author')}&isbn=${searchParams.get('isbn')}&coverImage=${searchParams.get('coverImage')}&description=${searchParams.get('description')}`
 
   console.log('isInLibrary:', searchParams.get('isInLibrary'));
+  console.log('bookId', bookId);
 
   useEffect(() => {
     if (status === "loading") {
@@ -47,6 +50,8 @@ export default function BookDetailsPage() {
       const titleFromUrl = searchParams.get('title');
       const authorFromUrl = searchParams.get('author');
       const isbnFromUrl = searchParams.get('isbn');
+      const yearOfPublicationFromUrl = searchParams.get('year_of_publication');
+      const subjectFromUrl = searchParams.get('subject');
       const coverImageFromUrl = searchParams.get('coverImage');
       const descriptionFromUrl = searchParams.get('description');
 
@@ -55,17 +60,25 @@ export default function BookDetailsPage() {
           const response = await fetch('/api/get-book-details', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: titleFromUrl, isInLibrary })
+            body: JSON.stringify({ bookId: bookId, isInLibrary })
           });
           const data = await response.json();
-          const bookFromApi = data?.bookDetails?.[0];
+          const bookFromApi = data?.bookDetails;
+
+          console.log('Book details from API:', data);
 
           const mappedBook: BookData = {
             id: bookId || "url-book",
             title: bookFromApi?.title ?? titleFromUrl ?? null,
-            author: bookFromApi?.authors ?? authorFromUrl ?? null,
-            isbn: bookFromApi?.isbn_issn ?? isbnFromUrl ?? null,
-            coverImage: coverImageFromUrl || "https://placehold.co/400x600/gray/white?text=No+Cover",
+            author: bookFromApi?.author ?? bookFromApi?.authors ?? authorFromUrl ?? null,
+            isbn: bookFromApi?.isbn_issn ?? bookFromApi?.isbn ?? bookFromApi?.issn ?? isbnFromUrl ?? null,
+            yearOfPublication: bookFromApi?.year_of_publication ?? yearOfPublicationFromUrl ?? null,
+            subject: bookFromApi?.subject ?? subjectFromUrl ?? null,
+            coverImage:
+              bookFromApi?.thumb_nail ??
+              bookFromApi?.small_thumb_nail ??
+              coverImageFromUrl ??
+              "https://placehold.co/400x600/gray/white?text=No+Cover",
             description: bookFromApi?.description ?? descriptionFromUrl ?? null,
           };
 
@@ -77,6 +90,8 @@ export default function BookDetailsPage() {
             title: titleFromUrl ?? null,
             author: authorFromUrl ?? null,
             isbn: isbnFromUrl ?? null,
+            yearOfPublication: yearOfPublicationFromUrl ?? null,
+            subject: subjectFromUrl ?? null,
             coverImage: coverImageFromUrl || "https://placehold.co/400x600/gray/white?text=No+Cover",
             description: descriptionFromUrl ?? null,
           });
@@ -154,8 +169,18 @@ export default function BookDetailsPage() {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="year-of-publication">Year of Publication</Label>
+              <Input id="year-of-publication" value={book.yearOfPublication ?? ""} readOnly className="bg-gray-100" />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="subject">Subject</Label>
+              <Input id="subject" value={book.subject ?? ""} readOnly className="bg-gray-100" />
+            </div>
+
+            <div className="space-y-2">
               <Label>Description</Label>
-              <p className="text-gray-600 bg-gray-50 p-3 rounded-md border">
+              <p className="text-gray-600 bg-gray-50 p-3 rounded-md border max-h-56 overflow-y-auto whitespace-pre-wrap">
                 {book.description ?? null}
               </p>
             </div>
