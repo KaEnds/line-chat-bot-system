@@ -2,8 +2,8 @@ import { Pool, QueryResult } from 'pg';
 
 // ตั้งค่า Connection Pool ตามข้อมูลใน pgAdmin
 const pool = new Pool({
-  host: 'host.docker.internal',
-  port: 5434,
+  host: 'postgres',
+  port: 5432,
   database: 'librairy', 
   user: 'admin',
   password: 'adminpass'
