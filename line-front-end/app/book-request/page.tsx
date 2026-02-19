@@ -202,19 +202,19 @@ function BookRequestContent() {
           {/* ข้อมูลผู้ใช้งาน */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700 text-xs">ชื่อ</Label>
+              <Label className="font-bold text-gray-700 text-xs">ชื่อ ( name )</Label>
               <Input value={formData.firstName} readOnly className="bg-gray-50 border-gray-200" />
             </div>
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700 text-xs">สกุล</Label>
+              <Label className="font-bold text-gray-700 text-xs">สกุล ( surname )</Label>
               <Input value={formData.lastName} readOnly className="bg-gray-50 border-gray-200" />
             </div>
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700 text-xs">รหัสนักศึกษา</Label>
+              <Label className="font-bold text-gray-700 text-xs">รหัสนักศึกษา ( student ID )</Label>
               <Input value={formData.studentId} readOnly className="bg-gray-50 border-gray-200" />
             </div>
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700 text-xs">ชั้นปี</Label>
+              <Label className="font-bold text-gray-700 text-xs">ชั้นปี ( academic year )</Label>
               <Select onValueChange={handleSelectChange("academicYear")} value={formData.academicYear}>
                 <SelectTrigger className={errors.academicYear ? "border-red-500 shadow-sm" : "shadow-sm"}>
                   <SelectValue placeholder="เลือกชั้นปี" />
@@ -224,15 +224,16 @@ function BookRequestContent() {
                   <SelectItem value="2">ปี 2</SelectItem>
                   <SelectItem value="3">ปี 3</SelectItem>
                   <SelectItem value="4">ปี 4</SelectItem>
-                  <SelectItem value="5">สูงกว่าปริญญาตรี</SelectItem>
-                  <SelectItem value="6">เจ้าหน้าที่</SelectItem>
+                  <SelectItem value="5">ปริญญาโท ( Master )</SelectItem>
+                  <SelectItem value="6">ปริญญาเอก ( Doctoror )</SelectItem>
+                  <SelectItem value="7">เจ้าหน้าที่ ( Staff )</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             
             {/* Faculty & Department Selectors */}
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700 text-xs">คณะ</Label>
+              <Label className="font-bold text-gray-700 text-xs">คณะ ( faculty )</Label>
               <Select onValueChange={handleSelectChange("faculty")} value={formData.faculty}>
                 <SelectTrigger className={errors.faculty ? "border-red-500 w-full" : "w-full"}>
                   <SelectValue placeholder="เลือกคณะ" />
@@ -252,7 +253,7 @@ function BookRequestContent() {
             </div>
             
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700  text-xs">ภาควิชา</Label>
+              <Label className="font-bold text-gray-700  text-xs">ภาควิชา ( department )</Label>
               <Select onValueChange={handleSelectChange("department")} value={formData.department} disabled={!formData.faculty}>
                 <SelectTrigger className={errors.department ? "border-red-500 w-full" : "w-full"}>
                   <SelectValue placeholder="เลือกภาควิชา" />
@@ -261,8 +262,10 @@ function BookRequestContent() {
                   {FactAndDept
                     .filter((item) => item.faculty_id === parseInt(formData.faculty))
                     .filter((item) => {
-                      if (formData.academicYear === '6') {
+                      if (formData.academicYear === '7') {
                         return item.department_name_th === 'อื่น ๆ';
+                      } else if(formData.academicYear === '6') {
+                        return item.degree && item.degree.toLowerCase().includes('doctor');
                       } else if (formData.academicYear === '5') {
                         return item.degree && item.degree.toLowerCase().includes('master');
                       } else {
@@ -282,7 +285,7 @@ function BookRequestContent() {
 
           <div className='space-y-2'>
             <Label className="font-bold text-gray-700 text-xs w-full">หมายเหตุ (remark)</Label>
-            <Input name='remark' value={formData.remark} onChange={handleChange} className="bg-gray-50 border-gray-200" />
+            <Input name='remark' placeholder='ใส่ข้อมูล คณะ และภาควิชา ในกรณีที่ไม่มีข้อมูลสำหรับนักศึกษา และใส่หน่วยงานหรือสังกัดสำหรับเจ้าหน้าที่' value={formData.remark} onChange={handleChange} className="bg-gray-50 border-gray-200" />
           </div>
 
           <hr className="border-gray-100" />
@@ -316,13 +319,13 @@ function BookRequestContent() {
                 {errors.isbn && <p className="text-red-500 text-sm">{errors.isbn}</p>}
               </div>
               <div className="space-y-2">
-                <Label className="font-bold text-gray-700  text-xs">Publisher (สำนักพิมพ์)</Label>
+                <Label className="font-bold text-gray-700  text-xs">สำนักพิมพ์ ( Publisher )</Label>
                 <Input name="publisher" value={formData.publisher} onChange={handleChange} className="shadow-sm" />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700  text-xs">สาขาห้องสมุดที่ต้องการ</Label>
+              <Label className="font-bold text-gray-700  text-xs">สาขาห้องสมุดที่ต้องการ ( Library Branch )</Label>
               <Select onValueChange={handleSelectChange("branch")} value={formData.branch}>
                 <SelectTrigger className={errors.branch ? "border-red-500" : ""}>
                   <SelectValue placeholder="เลือกสาขาห้องสมุด" />
@@ -336,7 +339,7 @@ function BookRequestContent() {
             </div>
 
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700  text-xs">เหตุผลที่ขอ (Reason)</Label>
+              <Label className="font-bold text-gray-700  text-xs">เหตุผลที่ขอ ( Reason )</Label>
               <Select onValueChange={handleSelectChange("reason")} value={formData.reason}>
                 <SelectTrigger className={errors.reason ? "border-red-500" : ""}>
                   <SelectValue placeholder="เลือกเหตุผล" />
@@ -351,7 +354,7 @@ function BookRequestContent() {
             </div>
 
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700 text-xs">คำอธิบายเพิ่มเติม</Label>
+              <Label className="font-bold text-gray-700 text-xs">คำอธิบายเพิ่มเติม ( Additional Reason )</Label>
               <textarea
                 name="reasonDescription"
                 value={formData.reasonDescription}
