@@ -37,7 +37,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
 
 # คัดลอก .env.local ถ้ามี (optional)
-COPY .env*.local ./
+COPY .env.local ./
 
 # เปิด port ที่ Next.js ใช้
 EXPOSE 3000

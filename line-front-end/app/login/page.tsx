@@ -8,7 +8,9 @@ import { useEffect } from "react";
 
 
 
-export default function LoginPage() {
+import { Suspense } from "react";
+
+function LoginContent() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
@@ -54,6 +56,14 @@ export default function LoginPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }
 
