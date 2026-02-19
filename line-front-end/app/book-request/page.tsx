@@ -224,7 +224,7 @@ function BookRequestContent() {
                   <SelectItem value="2">ปี 2</SelectItem>
                   <SelectItem value="3">ปี 3</SelectItem>
                   <SelectItem value="4">ปี 4</SelectItem>
-                  <SelectItem value="5">สูงกว่าปริญญาตรี</SelectItem>
+                  <SelectItem value="5">ปริญญาโท</SelectItem>
                   <SelectItem value="6">เจ้าหน้าที่</SelectItem>
                 </SelectContent>
               </Select>
@@ -232,7 +232,7 @@ function BookRequestContent() {
             
             {/* Faculty & Department Selectors */}
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700 text-xs">คณะ</Label>
+              <Label className="font-bold text-gray-700 text-xs">คณะ ( Faculty )</Label>
               <Select onValueChange={handleSelectChange("faculty")} value={formData.faculty}>
                 <SelectTrigger className={errors.faculty ? "border-red-500 w-full" : "w-full"}>
                   <SelectValue placeholder="เลือกคณะ" />
@@ -252,7 +252,7 @@ function BookRequestContent() {
             </div>
             
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700  text-xs">ภาควิชา</Label>
+              <Label className="font-bold text-gray-700  text-xs">ภาควิชา ( Department )</Label>
               <Select onValueChange={handleSelectChange("department")} value={formData.department} disabled={!formData.faculty}>
                 <SelectTrigger className={errors.department ? "border-red-500 w-full" : "w-full"}>
                   <SelectValue placeholder="เลือกภาควิชา" />
@@ -290,7 +290,7 @@ function BookRequestContent() {
           {/* ข้อมูลหนังสือ */}
           <div className="space-y-5">
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700  text-xs">ชื่อหนังสือ (Title)</Label>
+              <Label className="font-bold text-gray-700  text-xs">ชื่อหนังสือ ( Title )</Label>
               <Input name="title" value={formData.title} onChange={handleChange} className={errors.title ? "border-red-500 shadow-sm" : "shadow-sm"} />
             </div>
             
@@ -316,7 +316,7 @@ function BookRequestContent() {
                 {errors.isbn && <p className="text-red-500 text-sm">{errors.isbn}</p>}
               </div>
               <div className="space-y-2">
-                <Label className="font-bold text-gray-700  text-xs">Publisher (สำนักพิมพ์)</Label>
+                <Label className="font-bold text-gray-700  text-xs">Publisher ( สำนักพิมพ์ )</Label>
                 <Input name="publisher" value={formData.publisher} onChange={handleChange} className="shadow-sm" />
               </div>
             </div>
@@ -336,7 +336,7 @@ function BookRequestContent() {
             </div>
 
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700  text-xs">เหตุผลที่ขอ (Reason)</Label>
+              <Label className="font-bold text-gray-700  text-xs">เหตุผลที่ขอ ( Reason )</Label>
               <Select onValueChange={handleSelectChange("reason")} value={formData.reason}>
                 <SelectTrigger className={errors.reason ? "border-red-500" : ""}>
                   <SelectValue placeholder="เลือกเหตุผล" />
