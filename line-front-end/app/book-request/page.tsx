@@ -63,8 +63,6 @@ function BookRequestContent() {
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [FactAndDept, setFactAndDept] = useState<any[]>([]);
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -164,13 +162,12 @@ function BookRequestContent() {
     }
     
     setErrors({});
-    setShowConfirmModal(true);
-  };
 
-  const handleConfirmSubmit = async () => {
-    setShowConfirmModal(false);
-    setIsSubmitting(true);
-
+    const isConfirmed = window.confirm('ยืนยันการส่งข้อมูลคำขอจัดซื้อใช่หรือไม่?');
+    if (!isConfirmed) {
+      return;
+    }
+    
     try {
       const response = await fetch('/api/create-book-request', {
         method: 'POST',
@@ -180,8 +177,6 @@ function BookRequestContent() {
       if (response.ok) router.push("/submit-complete");
     } catch (error) {
       console.error('Error submitting form:', error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -410,37 +405,10 @@ function BookRequestContent() {
             </div>
           </div>
 
-          <Button type="submit" disabled={isSubmitting} className="w-full text-lg py-7 bg-black hover:bg-gray-800 text-white rounded-xl shadow-lg transition-transform active:scale-[0.98] font-black disabled:opacity-60">
-            {isSubmitting ? 'กำลังส่งข้อมูล...' : 'ส่งข้อมูลคำขอจัดซื้อ'}
+          <Button type="submit" className="w-full text-lg py-7 bg-black hover:bg-gray-800 text-white rounded-xl shadow-lg transition-transform active:scale-[0.98] font-black">
+            ส่งข้อมูลคำขอจัดซื้อ
           </Button>
         </form>
-
-        {showConfirmModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-gray-100">
-              <h2 className="text-xl font-black text-gray-900">ยืนยันการส่งคำขอ</h2>
-              <p className="mt-2 text-sm text-gray-600">กรุณาตรวจสอบข้อมูลอีกครั้งก่อนส่งข้อมูลคำขอจัดซื้อ</p>
-
-              <div className="mt-6 flex gap-3 justify-end">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="border-gray-300"
-                  onClick={() => setShowConfirmModal(false)}
-                >
-                  ยกเลิก
-                </Button>
-                <Button
-                  type="button"
-                  className="bg-black hover:bg-gray-800 text-white"
-                  onClick={handleConfirmSubmit}
-                >
-                  ยืนยันส่งข้อมูล
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
