@@ -127,6 +127,10 @@ function BookRequestContent() {
   const handleSelectChange = (name: string) => (value: string) => {
     setFormData(prev => {
       const newData = { ...prev, [name]: value };
+      if (name === 'academicYear') {
+        newData.faculty = '';
+        newData.department = '';
+      }
       if (name === 'faculty') newData.department = '';
       return newData;
     });
