@@ -130,20 +130,26 @@ function BookRequestContent() {
       if (name === 'academicYear') {
         newData.faculty = '';
         newData.department = '';
+        if (value !== '7') {
+          newData.remark = '';
+        }
       }
       if (name === 'faculty') newData.department = '';
       return newData;
     });
   };
 
+  const isOtherOption = (value?: string) => value?.replace(/\s/g, '') === 'อื่นๆ';
+  const selectedFaculty = FactAndDept.find((item) => item.faculty_id === parseInt(formData.faculty));
+  const selectedDepartment = FactAndDept.find((item) => item.department_id === parseInt(formData.department));
+  const shouldEnableRemark = formData.academicYear === '7' || isOtherOption(selectedFaculty?.faculty_name_th) || isOtherOption(selectedDepartment?.department_name_th);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const newErrors: FormErrors = {};
     const requiredFields = ['academicYear', 'faculty', 'department', 'title', 'reason', 'reasonDescription', 'branch'];
-    const selectedFaculty = FactAndDept.find((item) => item.faculty_id === parseInt(formData.faculty));
-    const isOtherFaculty = selectedFaculty?.faculty_name_th === 'อื่น ๆ' || selectedFaculty?.faculty_name_th === 'อื่นๆ';
 
-    if (formData.academicYear === '7' || isOtherFaculty) {
+    if (shouldEnableRemark) {
       requiredFields.push('remark');
     }
     requiredFields.forEach(field => {
@@ -309,6 +315,7 @@ function BookRequestContent() {
               placeholder='ใส่ข้อมูล คณะ และภาควิชา ในกรณีที่ไม่มีข้อมูลสำหรับนักศึกษา และใส่หน่วยงานหรือสังกัดสำหรับเจ้าหน้าที่'
               value={formData.remark}
               onChange={handleChange}
+              disabled={!shouldEnableRemark}
               className={errors.remark ? "bg-gray-50 border-red-500" : "bg-gray-50 border-gray-200"}
             />
           </div>
