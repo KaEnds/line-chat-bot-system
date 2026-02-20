@@ -163,7 +163,12 @@ export const getMyRequests = async (requesterID: string) => {
 };
 
 export const getOthersRequests = async (requesterID: string) => {
-  const query = 'SELECT * FROM librairy.book_requests WHERE requester_id != $1'
+  const query = `SELECT br.*
+                FROM librairy.book_requests br
+                JOIN librairy.batch_requests b_req ON br.request_id = b_req.request_id
+                JOIN librairy.batches b ON b_req.batch_id = b.batch_id
+                WHERE br.requester_id != $1     
+                AND CURRENT_TIMESTAMP BETWEEN b.batch_start_date AND b.batch_end_date`;
 
   const values = [requesterID];
   
