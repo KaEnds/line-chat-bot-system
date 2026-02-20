@@ -118,7 +118,28 @@ export default function MyRequestPage() {
           />
         </div>
 
-        <div className="mb-4 sm:mb-6 flex justify-end">
+        <div className="mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap gap-2">
+            {[
+              { label: "ทั้งหมด", value: "ALL" },
+              { label: "PENDING", value: "PENDING" },
+              { label: "REJECT", value: "REJECT" },
+              { label: "APPROVE", value: "APPROVE" },
+            ].map((filterItem) => (
+              <button
+                key={filterItem.value}
+                type="button"
+                onClick={() => setStatusFilter(filterItem.value as "ALL" | "PENDING" | "REJECT" | "APPROVE")}
+                className={`px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold border transition-all ${
+                  statusFilter === filterItem.value
+                    ? "bg-black text-white border-black"
+                    : "bg-white/90 text-gray-700 border-gray-200 hover:bg-white"
+                }`}
+              >
+                {filterItem.label}
+              </button>
+            ))}
+          </div>
           <button
             type="button"
             onClick={() => setSortOrder((prev) => (prev === "latest" ? "oldest" : "latest"))}
@@ -126,28 +147,6 @@ export default function MyRequestPage() {
           >
             {sortOrder === "latest" ? "เรียง: ใหม่สุดก่อน" : "เรียง: เก่าสุดก่อน"}
           </button>
-        </div>
-
-        <div className="mb-4 sm:mb-6 flex flex-wrap gap-2">
-          {[
-            { label: "ทั้งหมด", value: "ALL" },
-            { label: "PENDING", value: "PENDING" },
-            { label: "REJECT", value: "REJECT" },
-            { label: "APPROVE", value: "APPROVE" },
-          ].map((filterItem) => (
-            <button
-              key={filterItem.value}
-              type="button"
-              onClick={() => setStatusFilter(filterItem.value as "ALL" | "PENDING" | "REJECT" | "APPROVE")}
-              className={`px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold border transition-all ${
-                statusFilter === filterItem.value
-                  ? "bg-black text-white border-black"
-                  : "bg-white/90 text-gray-700 border-gray-200 hover:bg-white"
-              }`}
-            >
-              {filterItem.label}
-            </button>
-          ))}
         </div>
         
         {/* Request Cards */}
