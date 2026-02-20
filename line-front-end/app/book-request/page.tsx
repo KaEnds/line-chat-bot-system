@@ -127,6 +127,9 @@ function BookRequestContent() {
     
     // Validation ขั้นพื้นฐาน
     const requiredFields = ['academicYear', 'faculty', 'department', 'title', 'reason', 'reasonDescription', 'branch'];
+    if (formData.academicYear === '7') {
+      requiredFields.push('remark');
+    }
     requiredFields.forEach(field => {
       if (!(formData as any)[field]) newErrors[field] = `Required field`;
     });
@@ -202,11 +205,11 @@ function BookRequestContent() {
           {/* ข้อมูลผู้ใช้งาน */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700 text-xs">ชื่อ ( first name )</Label>
+              <Label className="font-bold text-gray-700 text-xs">ชื่อ ( firstname )</Label>
               <Input value={formData.firstName} readOnly className="bg-gray-50 border-gray-200" />
             </div>
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700 text-xs">สกุล ( last name )</Label>
+              <Label className="font-bold text-gray-700 text-xs">สกุล ( lastname )</Label>
               <Input value={formData.lastName} readOnly className="bg-gray-50 border-gray-200" />
             </div>
             <div className="space-y-2">
@@ -224,8 +227,9 @@ function BookRequestContent() {
                   <SelectItem value="2">ปี 2</SelectItem>
                   <SelectItem value="3">ปี 3</SelectItem>
                   <SelectItem value="4">ปี 4</SelectItem>
-                  <SelectItem value="5">ปริญญาโท</SelectItem>
-                  <SelectItem value="6">เจ้าหน้าที่</SelectItem>
+                  <SelectItem value="5">ปริญญาโท ( master )</SelectItem>
+                  <SelectItem value="6">ปริญญาเอก ( doctor )</SelectItem>
+                  <SelectItem value="7">เจ้าหน้าที่ / อาจารย์ ( staff / lecturer )</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -261,8 +265,10 @@ function BookRequestContent() {
                   {FactAndDept
                     .filter((item) => item.faculty_id === parseInt(formData.faculty))
                     .filter((item) => {
-                      if (formData.academicYear === '6') {
+                      if (formData.academicYear === '7') {
                         return item.department_name_th === 'อื่น ๆ';
+                      } else if (formData.academicYear === '6') {
+                        return item.degree && item.degree.toLowerCase().includes('docter');
                       } else if (formData.academicYear === '5') {
                         return item.degree && item.degree.toLowerCase().includes('master');
                       } else {
@@ -282,7 +288,13 @@ function BookRequestContent() {
 
           <div className='space-y-2'>
             <Label className="font-bold text-gray-700 text-xs w-full">หมายเหตุ ( remark )</Label>
-            <Input name='remark' value={formData.remark} onChange={handleChange} className="bg-gray-50 border-gray-200" />
+            <Input
+              name='remark'
+              placeholder='ใส่ข้อมูล คณะ และภาควิชา ในกรณีที่ไม่มีข้อมูลสำหรับนักศึกษา และใส่หน่วยงานหรือสังกัดสำหรับเจ้าหน้าที่'
+              value={formData.remark}
+              onChange={handleChange}
+              className={errors.remark ? "bg-gray-50 border-red-500" : "bg-gray-50 border-gray-200"}
+            />
           </div>
 
           <hr className="border-gray-100" />
