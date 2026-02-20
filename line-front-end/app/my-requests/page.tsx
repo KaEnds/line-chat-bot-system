@@ -37,6 +37,7 @@ export default function MyRequestPage() {
   const [openDropdowns, setOpenDropdowns] = useState<{[key:number]: boolean}>({});
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState<"latest" | "oldest">("latest");
+  const [statusFilter, setStatusFilter] = useState<"ALL" | "PENDING" | "REJECT" | "APPROVE">("ALL");
 
   const { data: session, status } = useSession();
   console.log('Session Data in MyRequestContent:', session);
@@ -71,8 +72,8 @@ export default function MyRequestPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "approved": return "bg-green-100 text-green-700 border-green-200";
-      case "reject": return "bg-red-100 text-red-700 border-red-200";
+      case "APPROVE": return "bg-green-100 text-green-700 border-green-200";
+      case "REJECT": return "bg-red-100 text-red-700 border-red-200";
       default: return "bg-yellow-100 text-yellow-700 border-yellow-200";
     }
   };
@@ -95,6 +96,10 @@ export default function MyRequestPage() {
         item.isbn_issn?.toLowerCase().includes(query) ||
         item.publisher?.toLowerCase().includes(query)
       );
+    })
+    .filter((item) => {
+      if (statusFilter === "ALL") return true;
+      return item.status?.toUpperCase() === statusFilter;
     });
 
   return (
@@ -121,6 +126,28 @@ export default function MyRequestPage() {
           >
             {sortOrder === "latest" ? "เรียง: ใหม่สุดก่อน" : "เรียง: เก่าสุดก่อน"}
           </button>
+        </div>
+
+        <div className="mb-4 sm:mb-6 flex flex-wrap gap-2">
+          {[
+            { label: "ทั้งหมด", value: "ALL" },
+            { label: "PENDING", value: "PENDING" },
+            { label: "REJECT", value: "REJECT" },
+            { label: "APPROVE", value: "APPROVE" },
+          ].map((filterItem) => (
+            <button
+              key={filterItem.value}
+              type="button"
+              onClick={() => setStatusFilter(filterItem.value as "ALL" | "PENDING" | "REJECT" | "APPROVE")}
+              className={`px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold border transition-all ${
+                statusFilter === filterItem.value
+                  ? "bg-black text-white border-black"
+                  : "bg-white/90 text-gray-700 border-gray-200 hover:bg-white"
+              }`}
+            >
+              {filterItem.label}
+            </button>
+          ))}
         </div>
         
         {/* Request Cards */}
