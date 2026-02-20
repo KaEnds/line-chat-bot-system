@@ -127,7 +127,14 @@ function BookRequestContent() {
     
     // Validation ขั้นพื้นฐาน
     const requiredFields = ['academicYear', 'faculty', 'department', 'title', 'reason', 'reasonDescription', 'branch'];
-    if (formData.academicYear === '7') {
+    const selectedFaculty = FactAndDept.find(
+      (item) => item.faculty_id === parseInt(formData.faculty)
+    );
+    const isOtherFaculty =
+      selectedFaculty?.faculty_name_th === 'อื่น ๆ' ||
+      selectedFaculty?.faculty_name_th === 'อื่นๆ';
+
+    if (formData.academicYear === '7' || isOtherFaculty) {
       requiredFields.push('remark');
     }
     requiredFields.forEach(field => {
@@ -229,7 +236,7 @@ function BookRequestContent() {
                   <SelectItem value="4">ปี 4</SelectItem>
                   <SelectItem value="5">ปริญญาโท ( master )</SelectItem>
                   <SelectItem value="6">ปริญญาเอก ( doctor )</SelectItem>
-                  <SelectItem value="7">เจ้าหน้าที่ / อาจารย์ ( staff / lecturer )</SelectItem>
+                  <SelectItem value="7">เจ้าหน้าที่ หรือ อาจารย์ ( staff or lecturer )</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -244,7 +251,7 @@ function BookRequestContent() {
                 <SelectContent>
                   {FactAndDept
                     .filter((item, idx, self) => idx === self.findIndex((t) => t.faculty_id === item.faculty_id))
-                    .filter((item) => formData.academicYear === '6' ? item.faculty_name_th === 'อื่น ๆ' : true)
+                    .filter((item) => formData.academicYear === '7' ? item.faculty_name_th === 'อื่น ๆ' : true)
                     .map((item) => (
                       <SelectItem key={item.faculty_id} value={item.faculty_id.toString()}>
                         {item.faculty_name_th}
@@ -268,11 +275,11 @@ function BookRequestContent() {
                       if (formData.academicYear === '7') {
                         return item.department_name_th === 'อื่น ๆ';
                       } else if (formData.academicYear === '6') {
-                        return item.degree && item.degree.toLowerCase().includes('docter');
+                        return item.degree && item.degree.toLowerCase().includes('docter') || item.department_name_th === 'อื่น ๆ';
                       } else if (formData.academicYear === '5') {
-                        return item.degree && item.degree.toLowerCase().includes('master');
+                        return item.degree && item.degree.toLowerCase().includes('master') || item.department_name_th === 'อื่น ๆ';
                       } else {
-                        return item.degree && item.degree.toLowerCase().includes('bachelor');
+                        return item.degree && item.degree.toLowerCase().includes('bachelor') || item.department_name_th === 'อื่น ๆ';
                       }
                     })
                     .map((item) => (
