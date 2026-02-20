@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
-import { ChevronLeft, Clock, Search, MoreVertical } from "lucide-react";
+import { Search } from "lucide-react";
 
 const MOCK_REQUESTS = [
   { id: "1", title: "Clean Code", category: "Programming", status: "pending", date: "2026-02-04" },
@@ -33,10 +33,10 @@ interface myRequest {
 
 export default function MyRequestPage() {
   const router = useRouter();
-  const [requests] = useState(MOCK_REQUESTS);
   const [myRequest, setMyRequest] = useState<myRequest[]>([]);
-  // State for dropdown open/close for each card
   const [openDropdowns, setOpenDropdowns] = useState<{[key:number]: boolean}>({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOrder, setSortOrder] = useState<"latest" | "oldest">("latest");
 
   const { data: session, status } = useSession();
   console.log('Session Data in MyRequestContent:', session);
@@ -72,10 +72,30 @@ export default function MyRequestPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "approved": return "bg-green-100 text-green-700 border-green-200";
-      case "rejected": return "bg-red-100 text-red-700 border-red-200";
+      case "reject": return "bg-red-100 text-red-700 border-red-200";
       default: return "bg-yellow-100 text-yellow-700 border-yellow-200";
     }
   };
+
+  const sortedMyRequest = myRequest
+    .slice()
+    .sort((a, b) => {
+      const dateA = a.requested_at ? new Date(a.requested_at).getTime() : 0;
+      const dateB = b.requested_at ? new Date(b.requested_at).getTime() : 0;
+      return sortOrder === "latest" ? dateB - dateA : dateA - dateB;
+    });
+
+  const filteredAndSortedRequests = sortedMyRequest
+    .filter((item) => {
+      const query = searchTerm.trim().toLowerCase();
+      if (!query) return true;
+      return (
+        item.title?.toLowerCase().includes(query) ||
+        item.authors?.toLowerCase().includes(query) ||
+        item.isbn_issn?.toLowerCase().includes(query) ||
+        item.publisher?.toLowerCase().includes(query)
+      );
+    });
 
   return (
     // เปลี่ยนพื้นหลังทั้งหน้าเป็นสีเหลือง
@@ -87,20 +107,26 @@ export default function MyRequestPage() {
           <input 
             type="text" 
             placeholder="Search your requests..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 sm:py-3 rounded-2xl border-none bg-white/90 backdrop-blur-sm focus:ring-2 focus:ring-black outline-none transition-all shadow-md placeholder:text-gray-400 text-sm sm:text-base"
           />
+        </div>
+
+        <div className="mb-4 sm:mb-6 flex justify-end">
+          <button
+            type="button"
+            onClick={() => setSortOrder((prev) => (prev === "latest" ? "oldest" : "latest"))}
+            className="px-4 py-2 rounded-xl bg-white/90 shadow-md text-sm font-semibold text-gray-700 hover:bg-white"
+          >
+            {sortOrder === "latest" ? "เรียง: ใหม่สุดก่อน" : "เรียง: เก่าสุดก่อน"}
+          </button>
         </div>
         
         {/* Request Cards */}
         <div className="space-y-3 sm:space-y-4">
-          {myRequest
-            .slice() // copy array
-            .sort((a, b) => {
-              const dateA = a.requested_at ? new Date(a.requested_at).getTime() : 0;
-              const dateB = b.requested_at ? new Date(b.requested_at).getTime() : 0;
-              return dateB - dateA; // latest first
-            })
-            .map((item, idx) => {
+          {filteredAndSortedRequests
+            .map((item) => {
             // Only show these fields in dropdown
             const branchMap: Record<string, string> = {
               mai: "KMUTT Library",
@@ -164,7 +190,7 @@ export default function MyRequestPage() {
         </div>
 
         {/* Empty State */}
-        {requests.length === 0 && (
+        {filteredAndSortedRequests.length === 0 && (
           <div className="text-center py-20">
             <p className="text-black/50 font-bold italic">No requests found.</p>
           </div>
