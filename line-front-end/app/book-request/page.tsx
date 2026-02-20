@@ -68,17 +68,20 @@ function BookRequestContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const callbackUrl = `/book-request/?title=${searchParams.get('title') || ''}&author=${searchParams.get('author') || ''}&isbn=${searchParams.get('isbn') || ''}`;
+  const titleParam = searchParams.get('title') || '';
+  const authorParam = searchParams.get('author') || '';
+  const isbnParam = searchParams.get('isbn') || '';
+
+  const callbackUrl = `/book-request/?title=${titleParam}&author=${authorParam}&isbn=${isbnParam}`;
 
   useEffect(() => {
     if (status === "loading") return;
     
     if (status === "unauthenticated") {
-      router.push(`/login?callbackUrl=${searchParams.get('title') ? encodeURIComponent(callbackUrl) : '/book-request'}`);
+      router.push(`/login?callbackUrl=${titleParam ? encodeURIComponent(callbackUrl) : '/book-request'}`);
       return;
     }
 
-    // ดึงข้อมูลคณะและภาควิชา
     fetch('/api/get-faculties-and-departments')
       .then(res => res.json())
       .then(data => { 
@@ -86,7 +89,6 @@ function BookRequestContent() {
       })
       .catch(err => console.error("Error fetching faculties:", err));
 
-    // Autofill ข้อมูลจาก Session และ URL
     let sessionData = {};
     if (status === "authenticated" && session?.user) {
       const nameParts = session.user.name?.split(' ') || [''];
@@ -99,14 +101,23 @@ function BookRequestContent() {
       };
     }
 
-    const urlData = {
-      title: searchParams.get('title') || "",
-      author: searchParams.get('author') || "",
-      isbn: searchParams.get('isbn') || "",
-    };
+    setFormData(prev => {
+      const nextData = { ...prev };
+      const typedSessionData = sessionData as Partial<FormData>;
 
-    setFormData(prev => ({ ...prev, ...sessionData, ...urlData }));
-  }, [status, session, router, searchParams]);
+      if (!prev.firstName && typedSessionData.firstName) nextData.firstName = typedSessionData.firstName;
+      if (!prev.lastName && typedSessionData.lastName) nextData.lastName = typedSessionData.lastName;
+      if (!prev.email && typedSessionData.email) nextData.email = typedSessionData.email;
+      if (!prev.studentId && typedSessionData.studentId) nextData.studentId = typedSessionData.studentId;
+      if (!prev.department && typedSessionData.department) nextData.department = typedSessionData.department;
+
+      if (!prev.title && titleParam) nextData.title = titleParam;
+      if (!prev.author && authorParam) nextData.author = authorParam;
+      if (!prev.isbn && isbnParam) nextData.isbn = isbnParam;
+
+      return nextData;
+    });
+  }, [status, session, router, titleParam, authorParam, isbnParam, callbackUrl]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -116,7 +127,7 @@ function BookRequestContent() {
   const handleSelectChange = (name: string) => (value: string) => {
     setFormData(prev => {
       const newData = { ...prev, [name]: value };
-      if (name === 'faculty') newData.department = ''; // Reset ภาควิชาเมื่อเปลี่ยนคณะ
+      if (name === 'faculty') newData.department = '';
       return newData;
     });
   };
@@ -124,15 +135,9 @@ function BookRequestContent() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const newErrors: FormErrors = {};
-    
-    // Validation ขั้นพื้นฐาน
     const requiredFields = ['academicYear', 'faculty', 'department', 'title', 'reason', 'reasonDescription', 'branch'];
-    const selectedFaculty = FactAndDept.find(
-      (item) => item.faculty_id === parseInt(formData.faculty)
-    );
-    const isOtherFaculty =
-      selectedFaculty?.faculty_name_th === 'อื่น ๆ' ||
-      selectedFaculty?.faculty_name_th === 'อื่นๆ';
+    const selectedFaculty = FactAndDept.find((item) => item.faculty_id === parseInt(formData.faculty));
+    const isOtherFaculty = selectedFaculty?.faculty_name_th === 'อื่น ๆ' || selectedFaculty?.faculty_name_th === 'อื่นๆ';
 
     if (formData.academicYear === '7' || isOtherFaculty) {
       requiredFields.push('remark');
@@ -275,7 +280,7 @@ function BookRequestContent() {
                       if (formData.academicYear === '7') {
                         return item.department_name_th === 'อื่น ๆ';
                       } else if (formData.academicYear === '6') {
-                        return item.degree && item.degree.toLowerCase().includes('docter') || item.department_name_th === 'อื่น ๆ';
+                        return item.degree && item.degree.toLowerCase().includes('doctor') || item.department_name_th === 'อื่น ๆ';
                       } else if (formData.academicYear === '5') {
                         return item.degree && item.degree.toLowerCase().includes('master') || item.department_name_th === 'อื่น ๆ';
                       } else {
