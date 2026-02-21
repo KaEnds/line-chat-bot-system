@@ -130,7 +130,7 @@ function BookRequestContent() {
       if (name === 'academicYear') {
         newData.faculty = '';
         newData.department = '';
-        if (value !== '7') {
+        if (value !== '4') {
           newData.remark = '';
         }
       }
@@ -142,7 +142,7 @@ function BookRequestContent() {
   const isOtherOption = (value?: string) => value?.replace(/\s/g, '') === 'อื่นๆ';
   const selectedFaculty = FactAndDept.find((item) => item.faculty_id === parseInt(formData.faculty));
   const selectedDepartment = FactAndDept.find((item) => item.department_id === parseInt(formData.department));
-  const shouldEnableRemark = formData.academicYear === '7' || isOtherOption(selectedFaculty?.faculty_name_th) || isOtherOption(selectedDepartment?.department_name_th);
+  const shouldEnableRemark = formData.academicYear === '4' || isOtherOption(selectedFaculty?.faculty_name_th) || isOtherOption(selectedDepartment?.department_name_th);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -232,31 +232,28 @@ function BookRequestContent() {
           {/* ข้อมูลผู้ใช้งาน */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700 text-xs">ชื่อ ( firstname )</Label>
+              <Label className="font-bold text-gray-700 text-xs">ชื่อ ( Firstname )</Label>
               <Input value={formData.firstName} readOnly className="bg-gray-50 border-gray-200" />
             </div>
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700 text-xs">สกุล ( lastname )</Label>
+              <Label className="font-bold text-gray-700 text-xs">สกุล ( Lastname )</Label>
               <Input value={formData.lastName} readOnly className="bg-gray-50 border-gray-200" />
             </div>
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700 text-xs">รหัสนักศึกษา ( student ID )</Label>
+              <Label className="font-bold text-gray-700 text-xs">รหัสประจำตัว ( Student or Staff ID )</Label>
               <Input value={formData.studentId} readOnly className="bg-gray-50 border-gray-200" />
             </div>
             <div className="space-y-2">
-              <Label className="font-bold text-gray-700 text-xs">ชั้นปี ( academic year )</Label>
+              <Label className="font-bold text-gray-700 text-xs">ตำแหน่ง ( Position )</Label>
               <Select onValueChange={handleSelectChange("academicYear")} value={formData.academicYear}>
                 <SelectTrigger className={errors.academicYear ? "border-red-500 shadow-sm" : "shadow-sm"}>
                   <SelectValue placeholder="เลือกชั้นปี" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">ปี 1</SelectItem>
-                  <SelectItem value="2">ปี 2</SelectItem>
-                  <SelectItem value="3">ปี 3</SelectItem>
-                  <SelectItem value="4">ปี 4</SelectItem>
-                  <SelectItem value="5">ปริญญาโท ( master )</SelectItem>
-                  <SelectItem value="6">ปริญญาเอก ( doctor )</SelectItem>
-                  <SelectItem value="7">เจ้าหน้าที่ หรือ อาจารย์ ( staff or lecturer )</SelectItem>
+                  <SelectItem value="1">ปริญญาตรี ( Bachelor )</SelectItem>
+                  <SelectItem value="2">ปริญญาโท ( Master )</SelectItem>
+                  <SelectItem value="3">ปริญญาเอก ( Doctor )</SelectItem>
+                  <SelectItem value="4">เจ้าหน้าที่ หรือ อาจารย์ ( Staff or Lecturer )</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -271,7 +268,7 @@ function BookRequestContent() {
                 <SelectContent>
                   {FactAndDept
                     .filter((item, idx, self) => idx === self.findIndex((t) => t.faculty_id === item.faculty_id))
-                    .filter((item) => formData.academicYear === '7' ? item.faculty_name_th === 'อื่น ๆ' : true)
+                    .filter((item) => formData.academicYear === '4' ? item.faculty_name_th === 'อื่น ๆ' : true)
                     .map((item) => (
                       <SelectItem key={item.faculty_id} value={item.faculty_id.toString()}>
                         {item.faculty_name_th}
@@ -292,11 +289,11 @@ function BookRequestContent() {
                   {FactAndDept
                     .filter((item) => item.faculty_id === parseInt(formData.faculty))
                     .filter((item) => {
-                      if (formData.academicYear === '7') {
+                      if (formData.academicYear === '4') {
                         return item.department_name_th === 'อื่น ๆ';
-                      } else if (formData.academicYear === '6') {
+                      } else if (formData.academicYear === '3') {
                         return item.degree && item.degree.toLowerCase().includes('doctor') || item.department_name_th === 'อื่น ๆ';
-                      } else if (formData.academicYear === '5') {
+                      } else if (formData.academicYear === '2') {
                         return item.degree && item.degree.toLowerCase().includes('master') || item.department_name_th === 'อื่น ๆ';
                       } else {
                         return item.degree && item.degree.toLowerCase().includes('bachelor') || item.department_name_th === 'อื่น ๆ';
@@ -314,7 +311,7 @@ function BookRequestContent() {
           </div>
 
           <div className='space-y-2'>
-            <Label className="font-bold text-gray-700 text-xs w-full">หมายเหตุ ( remark )</Label>
+            <Label className="font-bold text-gray-700 text-xs w-full">หมายเหตุ ( Remark )</Label>
             <Input
               name='remark'
               placeholder='ใส่ข้อมูล คณะ และภาควิชา ในกรณีที่ไม่มีข้อมูลสำหรับนักศึกษา และใส่หน่วยงานหรือสังกัดสำหรับเจ้าหน้าที่'
@@ -343,7 +340,7 @@ function BookRequestContent() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className='font-bold text-gray-700  text-xs' htmlFor="isbn">ISBN/ISSN ( ถ้าไม่มีไม่ต้องใส่ )</Label>
+                <Label className='font-bold text-gray-700  text-xs' htmlFor="isbn">ISBN/ISSN</Label>
                 {/* [อัปเกรด] ช่องนี้จะ Autofill จาก URL */}
                 <Input
                   id="isbn"
@@ -383,9 +380,8 @@ function BookRequestContent() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Personal interest">Personal interest</SelectItem>
-                  <SelectItem value="in class usage">in class usage</SelectItem>
-                  <SelectItem value="insufficient existing resource">insufficient existing resource</SelectItem>
-                  <SelectItem value="other">อื่นๆ</SelectItem>
+                  <SelectItem value="in class usage">In class usage</SelectItem>
+                  <SelectItem value="insufficient existing resource">Insufficient existing resource</SelectItem>
                 </SelectContent>
               </Select>
             </div>
