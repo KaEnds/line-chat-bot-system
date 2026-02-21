@@ -35,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       {/* 4. เพิ่มตัวแปรฟอนต์ 'notoSansThai.variable' เข้าไปใน body */}
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${notoSansThai.variable} antialiased`}
