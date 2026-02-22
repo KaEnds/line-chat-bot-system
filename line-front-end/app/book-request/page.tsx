@@ -247,7 +247,7 @@ function BookRequestContent() {
               <Label className="font-bold text-gray-700 text-xs">ตำแหน่ง ( Position )</Label>
               <Select onValueChange={handleSelectChange("academicYear")} value={formData.academicYear}>
                 <SelectTrigger className={errors.academicYear ? "border-red-500 shadow-sm" : "shadow-sm"}>
-                  <SelectValue placeholder="เลือกชั้นปี" />
+                  <SelectValue placeholder="เลือกตำแหน่ง" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="1">ปริญญาตรี ( Bachelor )</SelectItem>
