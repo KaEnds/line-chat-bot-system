@@ -31,6 +31,7 @@ export default function BookDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const bookId = Array.isArray(params.id) ? params.id[0] : params.id;
+  const isInLibrary = searchParams.get('isInLibrary') === 'true';
   const callbackUrl = `/book-details/${bookId}?isInLibrary=${searchParams.get('isInLibrary')}&title=${searchParams.get('title')}&author=${searchParams.get('author')}&isbn=${searchParams.get('isbn')}&coverImage=${searchParams.get('coverImage')}&description=${searchParams.get('description')}`
 
   console.log('isInLibrary:', searchParams.get('isInLibrary'));
@@ -184,6 +185,18 @@ export default function BookDetailsPage() {
                 {book.description ?? null}
               </p>
             </div>
+
+            {isInLibrary && (
+              <Button asChild variant="outline" className="w-full text-lg py-6">
+                <Link
+                  href={`https://opac.lib.kmutt.ac.th/vufind/Record/${encodeURIComponent(book.id)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  เปิดใน OPAC
+                </Link>
+              </Button>
+            )}
 
             {/* 3. ปุ่มยื่นคำขอ */}
             <Button
