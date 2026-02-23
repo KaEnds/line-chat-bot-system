@@ -187,13 +187,18 @@ export default function BookDetailsPage() {
             </div>
 
             {isInLibrary && (
-              <Button asChild variant="outline" className="w-full text-lg py-6">
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="w-full h-12 text-base font-semibold rounded-lg"
+              >
                 <Link
                   href={`https://opac.lib.kmutt.ac.th/vufind/Record/${encodeURIComponent(book.id)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  เปิดใน OPAC
+                  เปิดดูรายการในระบบ OPAC
                 </Link>
               </Button>
             )}
@@ -201,9 +206,10 @@ export default function BookDetailsPage() {
             {/* 3. ปุ่มยื่นคำขอ */}
             <Button
               onClick={handleRequestClick}
-              className="w-full text-lg py-6"
+              size="lg"
+              className="w-full h-12 text-base font-semibold rounded-lg"
             >
-              ยื่นคำขอซื้อหนังสือเล่มนี้
+              ยื่นคำขอจัดซื้อหนังสือเล่มนี้
             </Button>
 
 
