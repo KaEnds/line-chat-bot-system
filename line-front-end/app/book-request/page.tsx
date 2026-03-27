@@ -121,6 +121,10 @@ function BookRequestContent() {
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    if (name === 'publishYear') {
+      setFormData(prev => ({ ...prev, [name]: value.replace(/\D/g, '') }));
+      return;
+    }
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
@@ -268,7 +272,6 @@ function BookRequestContent() {
                 <SelectContent>
                   {FactAndDept
                     .filter((item, idx, self) => idx === self.findIndex((t) => t.faculty_id === item.faculty_id))
-                    .filter((item) => formData.academicYear === '4' ? item.faculty_name_th === 'อื่น ๆ' : true)
                     .map((item) => (
                       <SelectItem key={item.faculty_id} value={item.faculty_id.toString()}>
                         {item.faculty_name_th}
@@ -289,9 +292,7 @@ function BookRequestContent() {
                   {FactAndDept
                     .filter((item) => item.faculty_id === parseInt(formData.faculty))
                     .filter((item) => {
-                      if (formData.academicYear === '4') {
-                        return item.department_name_th === 'อื่น ๆ';
-                      } else if (formData.academicYear === '3') {
+                      if (formData.academicYear === '3') {
                         return item.degree && item.degree.toLowerCase().includes('doctor') || item.department_name_th === 'อื่น ๆ';
                       } else if (formData.academicYear === '2') {
                         return item.degree && item.degree.toLowerCase().includes('master') || item.department_name_th === 'อื่น ๆ';
@@ -336,9 +337,6 @@ function BookRequestContent() {
                 <Label className="font-bold text-gray-700  text-xs">ผู้แต่ง ( Author )</Label>
                 <Input name="author" value={formData.author} onChange={handleChange} className="shadow-sm" />
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className='font-bold text-gray-700  text-xs' htmlFor="isbn">ISBN/ISSN</Label>
                 {/* [อัปเกรด] ช่องนี้จะ Autofill จาก URL */}
@@ -351,6 +349,23 @@ function BookRequestContent() {
                   className={errors.isbn ? "border-red-500" : ""}
                 />
                 {errors.isbn && <p className="text-red-500 text-sm">{errors.isbn}</p>}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className='font-bold text-gray-700  text-xs' htmlFor="publishYear">ปีที่ตีพิมพ์ ( Publish Year )</Label>
+                <Input
+                  id="publishYear"
+                  name="publishYear"
+                  value={formData.publishYear}
+                  onChange={handleChange}
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  placeholder=""
+                  className={errors.publishYear ? "border-red-500" : ""}
+                />
+                {errors.publishYear && <p className="text-red-500 text-sm">{errors.publishYear}</p>}
               </div>
               <div className="space-y-2">
                 <Label className="font-bold text-gray-700  text-xs">สำนักพิมพ์ ( Publisher )</Label>
