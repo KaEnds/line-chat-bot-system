@@ -62,26 +62,27 @@ export const getTestBib = async (limit: number = 100) => {
 
 export const insertBookRequest = async (data: any) => {
   const queryText = `
-    WITH inserted_request AS (
+  WITH active_batch AS (
+    SELECT batch_id FROM librairy.batches 
+    WHERE (NOW() AT TIME ZONE 'UTC') BETWEEN batch_start_date AND batch_end_date
+      AND status = 'PROCESSING'
+    LIMIT 1
+  ),
+  inserted_request AS (
         INSERT INTO librairy.book_requests (
             title, authors, isbn_issn, publication_year, publisher,
             branch, requester_name, requester_id, requester_role, 
             faculty_id, department_id, request_reason_category, 
             specify_reason, status, requested_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW() AT TIME ZONE 'UTC')
+    SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW() AT TIME ZONE 'UTC'
+    FROM active_batch
         RETURNING request_id
     ),
     insert_supporters AS (
         INSERT INTO librairy.request_supporters (request_id, requester_id, supported_at)
         SELECT request_id, $8, NOW() AT TIME ZONE 'UTC' FROM inserted_request
         RETURNING request_id
-    ),
-    active_batch AS (
-        SELECT batch_id FROM librairy.batches 
-        WHERE (NOW() AT TIME ZONE 'UTC') BETWEEN batch_start_date AND batch_end_date
-          AND status = 'PROCESSING'
-        LIMIT 1
     )
     INSERT INTO librairy.batch_requests (batch_id, request_id)
     SELECT 
@@ -111,7 +112,7 @@ export const insertBookRequest = async (data: any) => {
 
   try {
     const res = await pool.query(queryText, values);
-    return res.rows[0];
+    return res.rows[0] ?? null;
   } catch (err) {
     console.error('Database Insert Error:', err);
     throw err;
