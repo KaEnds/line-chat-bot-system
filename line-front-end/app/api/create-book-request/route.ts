@@ -19,6 +19,18 @@ const FormDataSchema = z.object({
     branch: z.string()
 });
 
+const parseOptionalInteger = (value: string) => {
+    if (!value.trim()) {
+        return null;
+    }
+
+    if (!/^\d+$/.test(value)) {
+        return Number.NaN;
+    }
+
+    return parseInt(value, 10);
+};
+
 export async function POST(request: Request) {
     let formData: unknown;
 
@@ -40,15 +52,15 @@ export async function POST(request: Request) {
         );
     }
 
-    const publicationYear = parseInt(validatedData.data.publishYear, 10);
-    const facultyId = parseInt(validatedData.data.faculty, 10);
-    const departmentId = parseInt(validatedData.data.department, 10);
+    const publicationYear = parseOptionalInteger(validatedData.data.publishYear);
+    const facultyId = parseOptionalInteger(validatedData.data.faculty);
+    const departmentId = parseOptionalInteger(validatedData.data.department);
 
-    if ([publicationYear, facultyId, departmentId].some(Number.isNaN)) {
+    if (facultyId === null || departmentId === null || [publicationYear, facultyId, departmentId].some((value) => Number.isNaN(value))) {
         return new Response(
             JSON.stringify({
                 status: 'error',
-                message: 'publishYear, faculty, and department must be valid numbers',
+                message: 'faculty and department must be valid numbers, and publishYear must be numeric when provided',
             }),
             { status: 400 }
         );

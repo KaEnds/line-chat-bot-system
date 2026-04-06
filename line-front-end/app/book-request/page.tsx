@@ -63,6 +63,7 @@ function BookRequestContent() {
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
+  const [submitError, setSubmitError] = useState<string>('');
   const [FactAndDept, setFactAndDept] = useState<any[]>([]);
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -97,7 +98,6 @@ function BookRequestContent() {
         lastName: nameParts.slice(1).join(' ') || '',
         email: session.user.email || "",
         studentId: (session.user as any).studentId || "",
-        department: (session.user as any).department || "",
       };
     }
 
@@ -109,8 +109,6 @@ function BookRequestContent() {
       if (!prev.lastName && typedSessionData.lastName) nextData.lastName = typedSessionData.lastName;
       if (!prev.email && typedSessionData.email) nextData.email = typedSessionData.email;
       if (!prev.studentId && typedSessionData.studentId) nextData.studentId = typedSessionData.studentId;
-      if (!prev.department && typedSessionData.department) nextData.department = typedSessionData.department;
-
       if (!prev.title && titleParam) nextData.title = titleParam;
       if (!prev.author && authorParam) nextData.author = authorParam;
       if (!prev.isbn && isbnParam) nextData.isbn = isbnParam;
@@ -153,12 +151,26 @@ function BookRequestContent() {
     const newErrors: FormErrors = {};
     const requiredFields = ['academicYear', 'faculty', 'department', 'title', 'reason', 'reasonDescription', 'branch'];
 
+    setSubmitError('');
+
     if (shouldEnableRemark) {
       requiredFields.push('remark');
     }
     requiredFields.forEach(field => {
       if (!(formData as any)[field]) newErrors[field] = `Required field`;
     });
+
+    if (formData.publishYear && !/^\d{1,4}$/.test(formData.publishYear)) {
+      newErrors.publishYear = 'Publish year must contain only digits';
+    }
+
+    if (formData.faculty && !/^\d+$/.test(formData.faculty)) {
+      newErrors.faculty = 'Please select a faculty from the list';
+    }
+
+    if (formData.department && !/^\d+$/.test(formData.department)) {
+      newErrors.department = 'Please select a department from the list';
+    }
     
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -178,9 +190,18 @@ function BookRequestContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-      if (response.ok) router.push("/submit-complete");
+
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        setSubmitError(result?.message || 'Unable to submit request right now');
+        return;
+      }
+
+      router.push("/submit-complete");
     } catch (error) {
       console.error('Error submitting form:', error);
+      setSubmitError('Unable to submit request right now');
     }
   };
 
@@ -229,6 +250,12 @@ function BookRequestContent() {
         {Object.keys(errors).length > 0 && (
           <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
             <p className="text-red-700 font-bold italic text-sm text-center">กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน</p>
+          </div>
+        )}
+
+        {submitError && (
+          <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
+            <p className="text-red-700 font-bold italic text-sm text-center">{submitError}</p>
           </div>
         )}
 
