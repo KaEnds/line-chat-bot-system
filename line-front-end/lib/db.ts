@@ -64,7 +64,7 @@ export const insertBookRequest = async (data: any) => {
   const queryText = `
   WITH active_batch AS (
     SELECT batch_id FROM librairy.batches 
-    WHERE (NOW() AT TIME ZONE 'UTC') BETWEEN batch_start_date AND batch_end_date
+    WHERE (NOW()) BETWEEN batch_start_date AND batch_end_date
       AND status = 'PROCESSING'
     LIMIT 1
   ),
