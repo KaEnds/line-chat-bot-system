@@ -1,4 +1,4 @@
-# Librairy Frontend (Next.js Application)
+# Librairy Chatbot System
 
 ระบบเว็บแอปพลิเคชันส่วนหน้า (Frontend) พัฒนาด้วย **Next.js** สำหรับระบบของหอสมุด มจธ. รองรับการเชื่อมต่อกับฐานข้อมูล PostgreSQL และการยืนยันตัวตนผ่าน Azure AD (Microsoft Entra ID)
 
